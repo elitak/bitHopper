@@ -48,7 +48,7 @@ class Pool():
                     'pass': eclipsemc_pass, 'lag': False, 
                     'api_address':'https://eclipsemc.com/api.php?key='+ eclipsemc_apikey
                      +'&action=poolstats', 'role':'disable'},
-                'miningmainframe':{'shares': default_shares, 'name': 'mining.mainframe.nl',
+                'mmf':{'shares': default_shares, 'name': 'mining.mainframe.nl',
                    'mine_address': 'mining.mainframe.nl:8343', 'user': miningmainframe_user,
                    'pass': miningmainframe_pass, 'lag': False, 
                     'api_address':'http://mining.mainframe.nl/api',
@@ -62,6 +62,11 @@ class Pool():
                    'mine_address': 'ozco.in:8332', 'user': ozco_user,
                    'pass': ozco_pass, 'lag': False,
                    'api_address':'https://ozco.in/api.php', 'role':'mine'},
+                'bcpool':{'shares': default_shares, 'name': 'bitcoinpool.com',
+                   'mine_address': 'bitcoinpool.com:8334', 'user': bcpool_user,
+                   'pass': bcpool_pass, 'lag': False, 'LP': None,
+                   'api_address':'http://bitcoinpool.com/pooljson.php',
+                   'role':'disable'},
                'triple':{'shares': default_shares, 'name': 'triplemining.com',
                    'mine_address': 'eu1.triplemining.com:8344', 'user': triple_user,
                    'pass': triple_pass, 'lag': False,
@@ -92,8 +97,11 @@ class Pool():
         for server in self.servers:
             self.servers[server]['refresh_time'] = 60
             self.servers[server]['rejects'] = self.bitHopper.db.get_rejects(server)
-            self.servers[server]['user_shares']=self.bitHopper.db.get_shares(server)
-
+            self.servers[server]['user_shares'] = self.bitHopper.db.get_shares(server)
+            self.servers[server]['payout'] = self.bitHopper.db.get_payout(server)
+            if 'api_address' not in self.servers[server]:
+                self.servers[server]['api_address'] = server
+            
     def get_entry(self, server):
         if server in self.servers:
             return self.servers[server]
@@ -177,9 +185,9 @@ class Pool():
         round_shares = int(info['round_shares'])
         self.UpdateShares('eclipsemc',round_shares)
 
-    def btcguild_sharesResponse(self, response):
+    def btcg_sharesResponse(self, response):
         info = json.loads(response)
-        round_shares = int(info['round_shares'])
+        round_shares = 10**10 #int(info['round_shares'])
         self.UpdateShares('btcg',round_shares)
 
     def bclc_sharesResponse(self, response):
@@ -207,6 +215,10 @@ class Pool():
         round_shares = int(info['poolRoundShares'])
         self.UpdateShares('nofeemining',round_shares)
 
+    def bcpool_sharesResponse(self, response):
+        round_shares = json.loads(response)['round_shares']
+        self.UpdateShares('bcpool', round_shares)
+
     def errsharesResponse(self, error, args):
         self.bitHopper.log_msg('Error in pool api for ' + str(args))
         self.bitHopper.log_dbg(str(error))
@@ -217,10 +229,16 @@ class Pool():
 
     def selectsharesResponse(self, response, args):
         self.bitHopper.log_dbg('Calling sharesResponse for '+ args)
-        getattr(self, args + '_sharesResponse')(response)
+        func = getattr(self, args + '_sharesResponse', None)
+        if func == None:
+            errsharesResponse("No sharesResponse function for " + args, args)
+        else:
+            func(response)
         self.bitHopper.server_update()
 
     def update_api_server(self,server):
+        if self.servers[server]['role'] not in ['mine','info']:
+            return
         info = self.servers[server]
         d = work.get(self.bitHopper.json_agent,info['api_address'])
         d.addCallback(self.selectsharesResponse, (server))

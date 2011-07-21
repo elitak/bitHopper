@@ -8,13 +8,15 @@ import work
 import diff
 import stats
 import pool
-
+import speed
 import database
+
 import sys
 import exceptions
 import optparse
 import time
 import lp
+import os.path
 
 from twisted.web import server, resource
 from client import Agent
@@ -35,24 +37,35 @@ class BitHopper():
         self.difficulty = diff.Difficulty(self)
         self.pool = pool.Pool(self)
         self.db = database.Database(self)
-        self.pool.setup(self)
         self.lp = lp.LongPoll(self)
-
+        self.speed = speed.Speed(self)
         self.stats = stats.Statistics(self)
+        
+        self.pool.setup(self)
 
     def reject_callback(self,server,data):
         try:
             if data != []:
                 self.db.update_rejects(server,1)
                 self.pool.get_servers()[server]['rejects'] += 1
-        except:
+        except Exception, e:
             self.log_dbg('reject_callback_error')
+            self.log_dbg(str(e))
             return
 
     def data_callback(self,server,data):
-        if data != []:
-            self.db.update_shares(server, 1)
-            self.pool.get_servers()[server]['user_shares'] +=1
+        try:
+            if data != []:
+                self.speed.add_shares(1)
+                self.db.update_shares(server, 1)
+                self.pool.get_servers()[server]['user_shares'] +=1
+        except Exception, e:
+            self.log_dbg('data_callback_error')
+            self.log_dbg(str(e))
+
+    def update_payout(self,server,payout):
+        self.db.set_payout(server,float(payout))
+        self.pool.servers[server]['payout'] = float(payout)
 
     def lp_callback(self, ):
         reactor.callLater(0.1,self.new_server.callback,None)
@@ -97,6 +110,7 @@ class BitHopper():
         
         for server in self.pool.get_servers():
             info = self.pool.get_entry(server)
+            info['shares'] = int(info['shares'])
             if info['role'] != 'mine':
                 continue
             if info['shares']< min_shares and info['lag'] == False:
@@ -251,7 +265,7 @@ def bitHopperLP(value, *methodArgs):
 def flat_info(request):
     response = '<html><head><title>bitHopper Info</title></head><body>'
     current_name = bithopper_global.pool.get_entry(bithopper_global.pool.get_current())['name']
-    response += '<p>Current Pool: ' + current_name+'</p>'
+    response += '<p>Current Pool: ' + current_name+' @ ' + str(bithopper_global.speed.get_rate()) + 'MH/s</p>'
     response += '<table border="1"><tr><td>Name</td><td>Role</td><td>Shares'
     response += '</td><td>Rejects</td><td>Payouts</td><td>Efficiency</td></tr>'
     servers = bithopper_global.pool.get_servers()
@@ -274,7 +288,7 @@ def flat_info(request):
     request.finish()
     return
 
-class infoSite(resource.Resource):
+class flatSite(resource.Resource):
     isLeaf = True
     def render_GET(self, request):
         flat_info(request)
@@ -289,6 +303,52 @@ class infoSite(resource.Resource):
     def getChild(self,name,request):
         return self
 
+class dataSite(resource.Resource):
+    isLeaf = True
+    def render_GET(self, request):
+        response = json.dumps({"current":bithopper_global.pool.get_current(), 'mhash':bithopper_global.speed.get_rate(), 'difficulty':bithopper_global.difficulty.get_difficulty(), 'servers':bithopper_global.pool.get_servers()})
+        request.write(response)
+        request.finish()
+        return server.NOT_DONE_YET
+
+    #def render_POST(self, request):
+    #    global new_server
+    #    bithopper_global.new_server.addCallback(bitHopperLP, (request))
+    #    return server.NOT_DONE_YET
+
+class dynamicSite(resource.Resource):
+    isleaF = True
+    def render_GET(self,request):
+        index = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+        file = open(index, 'r')
+        linestring = file.read()
+        file.close
+        request.write(linestring)
+        request.finish()
+        return server.NOT_DONE_YET
+
+    def render_POST(self, request):
+        for v in request.args:
+            if "role" in v:
+                try:
+                    server = v.split('-')[1]
+                    bithopper_global.pool.get_entry(server)['role'] = request.args[v][0]
+                    bithopper_global.server_update()
+                    if request.args[v] in ['mine','info']:
+                        bithopper_global.update_api_server(server)
+
+                except Exception,e:
+                    bithopper_global.log_msg('Incorrect http post request role')
+                    bithopper_global.log_msg(e)
+            if "payout" in v:
+                try:
+                    server = v.split('-')[1]
+                    bithopper_global.update_payout(server, float(request.args[v][0]))
+                except Exception,e:
+                    bithopper_global.log_dbg('Incorrect http post request payout')
+                    bithopper_global.log_dbg(e)
+        return self.render_GET(request)
+
 class lpSite(resource.Resource):
     isLeaf = True
     def render_GET(self, request):
@@ -298,10 +358,6 @@ class lpSite(resource.Resource):
     def render_POST(self, request):
         bithopper_global.new_server.addCallback(bitHopperLP, (request))
         return server.NOT_DONE_YET
-
-
-    def getChild(self,name,request):
-        return self
 
 class bitSite(resource.Resource):
 
@@ -317,8 +373,12 @@ class bitSite(resource.Resource):
         #bithopper_global.log_msg(str(name))
         if name == 'LP':
             return lpSite()
+        elif name == 'flat':
+            return flatSite()
         elif name == 'stats':
-            return infoSite()
+            return dynamicSite()
+        elif name == 'data':
+            return dataSite()
         return self
 
 def parse_server_disable(option, opt, value, parser):
@@ -331,6 +391,7 @@ def main():
     parser.add_option('--debug', action= 'store_true', default = False, help='Use twisted output')
     parser.add_option('--list', action= 'store_true', default = False, help='List servers')
     parser.add_option('--disable', type=str, default = None, action='callback', callback=parse_server_disable, help='Servers to disable. Get name from --list. Servera,Serverb,Serverc')
+    parser.add_option('--port', type = int, default=8337, help='Port to listen on')
     args, rest = parser.parse_args()
     options = args
     bithopper_global.options = args
@@ -339,9 +400,6 @@ def main():
         for k in bithopper_global.pool.get_servers():
             print k
         return
-    
-    for k in bithopper_global.pool.get_servers():
-        bithopper_global.pool.get_servers()[k]['user_shares'] = 0
 
     if options.disable != None:
         for k in options.disable:
@@ -354,7 +412,7 @@ def main():
 
     if options.debug: log.startLogging(sys.stdout)
     site = server.Site(bitSite())
-    reactor.listenTCP(8337, site)
+    reactor.listenTCP(options.port, site)
     reactor.callLater(0, bithopper_global.pool.update_api_servers, bithopper_global)
     delag_call = LoopingCall(bithopper_global.delag_server)
     delag_call.start(119)

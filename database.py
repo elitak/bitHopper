@@ -58,7 +58,7 @@ class Database():
         self.database.commit()
 
     def get_shares(self,server):
-        sql = 'select shares from ' + server
+        sql = 'select shares from ' + str(server)
         self.curs.execute(sql)
         shares = 0
         for info in self.curs.fetchall():
@@ -79,9 +79,9 @@ class Database():
             shares += int(info[0])
         return shares
         
-    def update_payout(self,server,payout):
+    def set_payout(self,server,payout):
         difficulty = self.bitHopper.difficulty.get_difficulty()
-        sql = 'UPDATE '+ server +'Set stored_payout= stored_payout + '+ str(payout) +' WHERE diff='+ str(difficulty)
+        sql = 'UPDATE '+ server +' Set stored_payout='+ str(payout) +' WHERE diff='+ str(difficulty)
         self.curs.execute(sql)
         self.database.commit()
 
