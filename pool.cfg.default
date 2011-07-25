@@ -59,19 +59,6 @@ user: dah4k0r@gmail.com_test
 pass: x
 nofeemining_user_apikey:4140cbc6405f4425cf91ca74e1450b66
 
-[triple]
-name: triplemining.com
-mine_address: eu1.triplemining.com:8344 
-api_address:https://www.triplemining.com/stats 
-api_method:re
-api_key:-->([ 0-9]+)</td>
-api_strip:' '
-role:mine
-#CHANGE THIS
-#https://www.triplemining.com/register
-user: c00w_test
-pass: x 
-
 [rfc]
 name: rfcpool.com
 mine_address: pool.rfcpool.com:8332 
@@ -108,6 +95,19 @@ api_key:totalShares
 user: c00w.testhop
 pass: testhop
 
+[btcworld]
+name: BTC World
+mine_address: btcworld.de:8332
+api_address:http://btcworld.de/statistics
+role:info
+api_method:re
+api_key:Verifizierte\s+Anteile\s+der\s+aktuellen\s+Runde:</th><td>([,0-9]+)
+api_strip:','
+#CHANGE THIS
+#http://btcworld.de/signup
+user: testhop
+pass: x
+
 ######################################
 # Backup Pools for when hopping is 
 # not worth doing
@@ -127,8 +127,19 @@ mine_address:arsbitcoin.com:8344
 role:backup
 #CHANGE THIS
 #https://arsbitcoin.com/register.php
-user = c00w.default
-pass = fire
+user:c00w.default
+pass:fire
+
+[bitp]
+name: bitp.it
+mine_address: pool.bitp.it:8334 
+role:backup
+user_api_address:https://pool.bitp.it/api/user?token=%(bitp_user_apikey)s
+bitp_user_apikey:80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
+#CHANGE THIS
+#bitp.it
+user: 4bjibc3R1RGF9
+pass: u5cpmndZq4Jvp
 
 ######################################
 # These Pools are not hopped for a
@@ -136,6 +147,18 @@ pass = fire
 # No need to change their user/pass
 # Unless you want to hop them.
 ######################################
+
+[triple]
+name: triplemining.com
+mine_address: eu1.triplemining.com:8344 
+api_address:https://www.triplemining.com/stats 
+api_method:json
+api_key:1
+role:disable
+#CHANGE THIS
+#https://www.triplemining.com/register
+user: c00w_test
+pass: x 
 
 [bitparking]
 name: bitparking.com
@@ -228,19 +251,6 @@ api_method:json
 api_key:shares_this_round
 api_address:http://mining.mainframe.nl/api
 role:disable
-
-[bitp]
-name: bitp.it
-mine_address: pool.bitp.it:8334 
-user: 4bjibc3R1RGF9
-pass: u5cpmndZq4Jvp
-api_address:https://pool.bitp.it/leaderboard 
-api_method:re
-api_key:Total</b></td>\n        <td>([\d+])
-role:disable
-user_api_address:https://pool.bitp.it/api/user?token=%(bitp_user_apikey)s
-bitp_user_apikey:80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
-
 
 [bcpool]
 name: bitcoinpool.com

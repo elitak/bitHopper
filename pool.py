@@ -8,12 +8,6 @@ import re
 import ConfigParser
 import os
 
-import htmllib 
-def unescape(s):
-    p = htmllib.HTMLParser(None)
-    p.save_bgn()
-    p.feed(s)
-    return p.save_end()
 
 class Pool():
     def __init__(self,bitHopper):
@@ -66,15 +60,15 @@ class Pool():
         prev_shares = self.servers[server]['shares']
         if shares == prev_shares:
             time = .10*self.servers[server]['refresh_time']
-            if time <= 10:
-                time = 10.
+            if time <= 30:
+                time = 30.
             self.servers[server]['refresh_time'] += .10*self.servers[server]['refresh_time']
             self.bitHopper.reactor.callLater(time,self.update_api_server,server)
         else:
             self.servers[server]['refresh_time'] -= .10*self.servers[server]['refresh_time']
             time = self.servers[server]['refresh_time']
-            if time <= 10:
-                self.servers[server]['refresh_time'] = 10
+            if time <= 30:
+                self.servers[server]['refresh_time'] = 30
             self.bitHopper.reactor.callLater(time,self.update_api_server,server)
 
         try:

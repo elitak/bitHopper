@@ -66,7 +66,7 @@ def jsonrpc_lpcall(agent,server, url, update):
 
 @defer.inlineCallbacks
 def get(agent,url):
-    d = agent.request('GET', url, None, None)
+    d = agent.request('GET', url, Headers({'User-Agent':['Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Ubuntu/11.04 Chromium/14.0.825.0 Chrome/14.0.825.0 Safari/535.1']}),None)
     response = yield d
     finish = Deferred()
     response.deliverBody(WorkProtocol(finish))
@@ -139,5 +139,5 @@ def jsonrpc_getwork(agent, server, data, j_id, request, new_server, set_lp, bitH
         request.write(response)
         request.finish()
     except Exception, e:
-        bithopper.log_dbg('caught, Final response/writing')
+        bitHopper.log_dbg('caught, Final response/writing')
         bitHopper.log_dbg(str(e))
