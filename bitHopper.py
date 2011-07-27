@@ -105,16 +105,24 @@ class BitHopper():
         """selects the best server for pool hopping. If there is not good server it returns eligious"""
         server_name = None
         difficulty = self.difficulty.get_difficulty()
-
+        nmc_difficulty = self.difficulty.get_nmc_difficulty()
         min_shares = difficulty*.40
         
         for server in self.pool.get_servers():
             info = self.pool.get_entry(server)
             info['shares'] = int(info['shares'])
-            if info['role'] != 'mine':
+            if info['role'] not in ['mine','mine_nmc','mine_slush']:
                 continue
-            if info['shares']< min_shares and info['lag'] == False:
-                min_shares = info['shares']
+            if info['role'] == 'mine':
+                    shares = info['shares']
+            elif info['role'] == 'mine_slush':
+                shares = info['shares'] * 4
+            elif info['role'] == 'mine_nmc':
+                shares = info['shares']*difficulty / nmc_difficulty
+            else:
+                shares = info['shares'] 
+            if shares< min_shares and info['lag'] == False:
+                min_shares = shares
                 server_name = server
 
         if server_name == None:
@@ -133,10 +141,18 @@ class BitHopper():
             min_shares = 10**10
             for server in self.pool.get_servers():
                 info = self.pool.get_entry(server)
-                if info['role'] != 'mine':
+                if info['role'] not in ['mine','mine_nmc','mine_slush']:
                     continue
-                if info['shares']< min_shares and info['lag'] == False:
-                    min_shares = info['shares']
+                if info['role'] == 'mine':
+                    shares = info['shares']
+                elif info['role'] == 'mine_slush':
+                    shares = info['shares'] * 4
+                elif info['role'] == 'mine_nmc':
+                    shares = info['shares']*difficulty / nmc_difficulty
+                else:
+                    shares = info['shares'] 
+                if shares< min_shares and info['lag'] == False:
+                    min_shares = shares
                     server_name = server
 
         if server_name == None:
@@ -165,12 +181,18 @@ class BitHopper():
         return self.pool.get_entry(self.pool.get_current())
 
     def server_update(self, ):
-        valid_roles = ['mine','backup']
+        valid_roles = ['mine', 'mine_slush','mine_nmc']
         if self.pool.get_entry(self.pool.get_current())['role'] not in valid_roles:
             self.select_best_server()
             return
 
-        difficulty = self.difficulty.get_difficulty()
+        current_role = self.pool.get_entry(self.pool.get_current())['role']
+        if current_role == 'mine':
+            difficulty = self.difficulty.get_difficulty()
+        if current_role == 'mine_nmc':
+            difficulty = self.difficulty.get_nmc_difficulty()
+        if current_role == 'mine_slush':
+            difficulty = self.difficulty.get_difficulty() * 4
         if self.pool.get_entry(self.pool.get_current())['shares'] > difficulty * .40:
             self.select_best_server()
             return
@@ -184,8 +206,6 @@ class BitHopper():
         if min_shares < self.pool.get_entry(self.pool.get_current())['shares']*.90:
             self.select_best_server()
             return
-
-
 
     @defer.inlineCallbacks
     def delag_server(self ):
@@ -220,7 +240,8 @@ def bitHopper_Post(request):
         bithopper_global.log_msg('RPC request ' + str(data) + " submitted to " + str(pool_server['name']))
     else:
         if data == []:
-            rep = ""
+            """ If request contains no data, tell the user which remote procedure was called instead """
+            rep = rpc_request['method']
         else:
             rep = str(data[0][155:163])
         bithopper_global.log_msg('RPC request [' + rep + "] submitted to " + str(pool_server['name']))
@@ -319,7 +340,10 @@ class dataSite(resource.Resource):
 class dynamicSite(resource.Resource):
     isleaF = True
     def render_GET(self,request):
-        index = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+        try:
+            index = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+        except:
+            index = 'index.html'
         file = open(index, 'r')
         linestring = file.read()
         file.close

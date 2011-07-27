@@ -8,6 +8,31 @@
 #   These Pools Are Hopped by Default
 #######################################
 
+[slush]
+name: bitcoin.cz
+mine_address: api2.bitcoin.cz:8332
+role: mine_slush
+api_address: http://mining.bitcoin.cz/stats/json/
+api_method: json
+api_key: shares
+#CHANGE THIS
+#http://mining.bitcoin.cz/accounts/register/
+user: c00w.testhop
+pass: testhop
+
+[unitedminers]
+name: unitedminers.com
+mine_address: pool.unitedminers.com:8332 
+api_address:http://www.unitedminers.com/?action=statistics
+api_method:re
+api_key:align="right">Shares for current round:</th><td>([,0-9]+)</td></tr></table></div><div
+api_strip:','
+role:mine
+#CHANGE THIS
+#unitedminers.com
+user: dah4k0r@gmail.com_testhop
+pass: testhop
+
 [ozco]
 name:ozco.in
 mine_address:ozco.in:8332
@@ -26,7 +51,7 @@ mine_address: polmine.pl:8347
 api_address:https://polmine.pl/?action=statistics 
 role:mine  
 api_method:re
-api_key: stkich:</th><td>([ 0-9]+)</td>
+api_key: <b>Ilość poprawnych wszystkich: &nbsp; </b> <br/>([ 0-9]+)<br/> <br/></td>
 api_strip:' '
 #CHANGE THIS
 #https://polmine.pl
@@ -46,19 +71,6 @@ user:scarium
 pass:x 
 mtred_user_apikey:d91c52cfe1609f161f28a1268a2915b8
 
-[nofeemining]
-name: nofeemining.com
-mine_address: nofeemining.com:8332 
-api_address: https://www.nofeemining.com/api.php?key%(nofeemining_user_apikey)s
-role:mine
-api_method:json
-api_key:poolRoundShares
-#CHANGE THIS
-#https://www.nofeemining.com/ 
-user: dah4k0r@gmail.com_test
-pass: x
-nofeemining_user_apikey:4140cbc6405f4425cf91ca74e1450b66
-
 [rfc]
 name: rfcpool.com
 mine_address: pool.rfcpool.com:8332 
@@ -74,26 +86,14 @@ pass: x
 [btcmonkey]
 name: bitcoinmonkey.com
 mine_address: bitcoinmonkey.com:8332
-api_address: http://bitcoinmonkey.com
-api_method:re
-api_key:Shares\s+this\s+round:\s+<strong>\s+(\d+)
+api_address: https://bitcoinmonkey.com/json/api.php
+api_method: json
+api_key: shares_this_round
 #CHANGE THIS
 #http://bitcoinmonkey.com/
 role: mine
 user: dah4k0r.testhop
 pass: x
-
-[poolmunity]
-name: poolmunity.com
-mine_address: poolmunity.com:8332
-api_address:https://poolmunity.com/api.php?server
-role:mine
-api_method:json
-api_key:totalShares
-#CHANGE THIS
-#http://poolmunity.com/index.php?PHPSESSID=3iglliv6bvs1r8fvve993l5sd2&action=register
-user: c00w.testhop
-pass: testhop
 
 [btcworld]
 name: BTC World
@@ -107,6 +107,30 @@ api_strip:','
 #http://btcworld.de/signup
 user: testhop
 pass: x
+
+[triple]
+name: triplemining.com
+mine_address: eu1.triplemining.com:8344 
+api_address:http://api.triplemining.com/json/stats
+api_method:json
+api_key:solved
+role:mine
+#CHANGE THIS
+#https://www.triplemining.com/register
+user: c00w_test
+pass: x 
+
+[bitclockers]
+name: bitclockers.com
+mine_address: pool.bitclockers.com:8332 
+user: flargle
+pass: x
+api_address:https://bitclockers.com/api 
+api_method:json
+api_key:roundshares
+role:mine
+user_api_address:https://bitclockers.com/api/%(bitclockers_user_apikey)s
+bitclockers_user_apikey:965469e512aa0de5a37b83ccfd5e849e
 
 ######################################
 # Backup Pools for when hopping is 
@@ -148,17 +172,30 @@ pass: u5cpmndZq4Jvp
 # Unless you want to hop them.
 ######################################
 
-[triple]
-name: triplemining.com
-mine_address: eu1.triplemining.com:8344 
-api_address:https://www.triplemining.com/stats 
-api_method:json
-api_key:1
+[nofeemining]
+name: nofeemining.com
+mine_address: nofeemining.com:8332 
+api_address: https://www.nofeemining.com/api.php?key%(nofeemining_user_apikey)s
 role:disable
+api_method:json
+api_key:poolRoundShares
 #CHANGE THIS
-#https://www.triplemining.com/register
-user: c00w_test
-pass: x 
+#https://www.nofeemining.com/ 
+user: dah4k0r@gmail.com_test
+pass: x
+nofeemining_user_apikey:4140cbc6405f4425cf91ca74e1450b66
+
+[poolmunity]
+name: poolmunity.com
+mine_address: poolmunity.com:8332
+api_address:https://poolmunity.com/api.php?server
+role:disable
+api_method:json
+api_key:totalShares
+#CHANGE THIS
+#http://poolmunity.com/index.php?PHPSESSID=3iglliv6bvs1r8fvve993l5sd2&action=register
+user: c00w.testhop
+pass: testhop
 
 [bitparking]
 name: bitparking.com
@@ -205,9 +242,9 @@ user_api_address:https://www.btcguild.com/api.php?api_key=%(btcguild_user_apikey
 role:disable
 api_method:json
 api_key:round_shares
-user = c00w_test
-pass = 1234
-btcguild_user_apikey = 81a9081f4d5f32db7dbbed407cb5f686
+user: c00w_test
+pass: 1234
+btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
 
 [mineco]
 name: mineco.in
@@ -218,18 +255,6 @@ api_address:https://mineco.in/stats.json
 role:disable
 api_method:json
 api_key:shares_this_round
-       
-[bitclockers]
-name: bitclockers.com
-mine_address: pool.bitclockers.com:8332 
-user: flargle
-pass: x
-api_address:https://bitclockers.com/api 
-api_method:json
-api_key:roundshares
-role:disable
-user_api_address:https://bitclockers.com/api/%(bitclockers_user_apikey)s
-bitclockers_user_apikey:965469e512aa0de5a37b83ccfd5e849e
 
 [eclipsemc]
 name: eclipsemc.com

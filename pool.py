@@ -12,9 +12,12 @@ import os
 class Pool():
     def __init__(self,bitHopper):
         self.servers = {}
-
+        self.api_pull = ['mine','info','mine_slush','mine_nmc']
         parser = ConfigParser.SafeConfigParser()
-        read = parser.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pool.cfg'))
+        try:
+            read = parser.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pool.cfg'))
+        except:
+            read = parser.read('pool.cfg')
         if len(read) == 0:
             bitHopper.log_msg("pool.cfg not found. You may need to move it from pool.cfg.default")
             os._exit(1)
@@ -38,7 +41,8 @@ class Pool():
             if 'api_address' not in self.servers[server]:
                 self.servers[server]['api_address'] = server
             if 'name' not in self.servers[server]:
-                self.server[server]['name'] = server
+                self.servers[server]['name'] = server
+            self.servers[server]['err_api_count'] = 0
             
     def get_entry(self, server):
         if server in self.servers:
@@ -80,6 +84,7 @@ class Pool():
         if shares != prev_shares:
             self.bitHopper.log_msg(str(server) +": "+ k)
         self.servers[server]['shares'] = shares
+        self.servers[server]['err_api_count'] = 0
         if self.servers[server]['refresh_time'] > 60*30:
             self.bitHopper.log_msg('Disabled due to unchanging api: ' + server)
             self.servers[server]['role'] = 'api_disable'
@@ -89,14 +94,16 @@ class Pool():
         self.bitHopper.log_msg('Error in pool api for ' + str(args))
         self.bitHopper.log_dbg(str(error))
         pool = args
-        self.servers[pool]['shares'] = 10**10
+        self.servers[pool]['err_api_count'] += 1
+        if self.servers[pool]['err_api_count'] > 1:
+            self.servers[pool]['shares'] = 10**10
         time = self.servers[pool]['refresh_time']
         self.bitHopper.reactor.callLater(time, self.update_api_server, pool)
 
     def selectsharesResponse(self, response, args):
         self.bitHopper.log_dbg('Calling sharesResponse for '+ args)
         server = self.servers[args]
-        if server['role'] not in ['mine','info']:
+        if server['role'] not in self.api_pull:
             return
 
         if server['api_method'] == 'json':
@@ -137,7 +144,7 @@ class Pool():
         self.bitHopper.server_update()
 
     def update_api_server(self,server):
-        if self.servers[server]['role'] not in ['mine','info']:
+        if self.servers[server]['role'] not in self.api_pull:
             return
         info = self.servers[server]
         d = work.get(self.bitHopper.json_agent,info['api_address'])
@@ -149,7 +156,7 @@ class Pool():
         self.bitHopper = bitHopper
         for server in self.servers:
             info = self.servers[server]
-            update = ['info','mine']
+            update = self.api_pull
             if info['role'] in update:
                 d = work.get(self.bitHopper.json_agent,info['api_address'])
                 d.addCallback(self.selectsharesResponse, (server))
