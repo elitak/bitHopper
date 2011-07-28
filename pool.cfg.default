@@ -1,7 +1,8 @@
 #######################################
 #    Pool Configuration File
-#  Change the usenames and passwords!
-#      RENAME TO pool.cfg 
+#  Copy this file to pool.cfg, then edit
+#  the account info in that file and delete
+#  every line in sections you don't alter.
 #######################################
 
 #######################################

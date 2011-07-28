@@ -13,17 +13,31 @@ class Pool():
     def __init__(self,bitHopper):
         self.servers = {}
         self.api_pull = ['mine','info','mine_slush','mine_nmc']
-        parser = ConfigParser.SafeConfigParser()
-        try:
-            read = parser.read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pool.cfg'))
-        except:
-            read = parser.read('pool.cfg')
-        if len(read) == 0:
-            bitHopper.log_msg("pool.cfg not found. You may need to move it from pool.cfg.default")
+
+        default_config = ConfigParser.SafeConfigParser()
+        user_config = ConfigParser.SafeConfigParser()
+        paths = [
+            os.path.join(os.path.dirname(__file__)),
+            os.getcwd()
+        ]
+
+        # try loading from each path until sucessful
+        files_read = 0
+        for path in paths:
+            try:
+                default_config.read(os.path.join(path, 'pool.cfg.default'))
+                files_read = user_config.read(os.path.join(path, 'pool.cfg'))
+                break
+            except:
+                pass
+
+        if len(files_read) == 0:
+            bitHopper.log_msg("pool.cfg not found. You may need to copy it from pool.cfg.default")
             os._exit(1)
-        pools = parser.sections()
-        for pool in pools:
-            self.servers[pool] = dict(parser.items(pool))
+
+        for pool in user_config.sections():
+            self.servers[pool] = dict(default_config.items(pool)) if default_config.has_section(pool) else dict()
+            self.servers[pool].update(user_config.items(pool))
         if self.servers == {}:
             bitHopper.log_msg("No Pools found in pool.cfg")
         
