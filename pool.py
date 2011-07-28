@@ -16,10 +16,11 @@ class Pool():
 
         default_config = ConfigParser.SafeConfigParser()
         user_config = ConfigParser.SafeConfigParser()
-        paths = [
-            os.path.join(os.path.dirname(__file__)),
-            os.getcwd()
-        ]
+        # Use sum() to flatten this list; this is to allow conditional inclusions.
+        paths = sum([
+            [os.path.join(os.path.dirname(__file__))] if '__file__' in globals() else [],
+            [os.getcwd()]
+        ], [])
 
         # try loading from each path until sucessful
         files_read = 0
