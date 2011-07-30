@@ -12,7 +12,7 @@ import os
 class Pool():
     def __init__(self,bitHopper):
         self.servers = {}
-        self.api_pull = ['mine','info','mine_slush','mine_nmc']
+        self.api_pull = ['mine','info','mine_slush','mine_nmc','mine_friendly']
 
         default_config = ConfigParser.SafeConfigParser()
         user_config = ConfigParser.SafeConfigParser()
@@ -39,6 +39,10 @@ class Pool():
         for pool in user_config.sections():
             self.servers[pool] = dict(default_config.items(pool)) if default_config.has_section(pool) else dict()
             self.servers[pool].update(user_config.items(pool))
+            self.servers[pool]['default_role'] = self.servers[pool]['role']
+            if self.servers[pool]['default_role'] in ['info','disable']:
+                self.servers[pool]['default_role'] = 'mine'
+
         if self.servers == {}:
             bitHopper.log_msg("No Pools found in pool.cfg")
         
@@ -53,11 +57,13 @@ class Pool():
             self.servers[server]['rejects'] = self.bitHopper.db.get_rejects(server)
             self.servers[server]['user_shares'] = self.bitHopper.db.get_shares(server)
             self.servers[server]['payout'] = self.bitHopper.db.get_payout(server)
+            self.servers[server]['expected_payout'] = self.bitHopper.db.get_expected_payout(server)
             if 'api_address' not in self.servers[server]:
                 self.servers[server]['api_address'] = server
             if 'name' not in self.servers[server]:
                 self.servers[server]['name'] = server
             self.servers[server]['err_api_count'] = 0
+            self.servers[server]['pool_index'] = server
             
     def get_entry(self, server):
         if server in self.servers:
@@ -91,7 +97,7 @@ class Pool():
             self.bitHopper.reactor.callLater(time,self.update_api_server,server)
 
         try:
-            k =  str('{0:,d}'.format(int(shares)))
+            k =  str('{0:d}'.format(int(shares)))
         except Exception, e:
             self.bitHopper.log_dbg("Error formatting")
             self.bitHopper.log_dbg(e)
@@ -100,7 +106,7 @@ class Pool():
             self.bitHopper.log_msg(str(server) +": "+ k)
         self.servers[server]['shares'] = shares
         self.servers[server]['err_api_count'] = 0
-        if self.servers[server]['refresh_time'] > 60*30:
+        if self.servers[server]['refresh_time'] > 60*30 and self.servers[server]['role'] != 'info':
             self.bitHopper.log_msg('Disabled due to unchanging api: ' + server)
             self.servers[server]['role'] = 'api_disable'
             return
@@ -125,6 +131,9 @@ class Pool():
             info = json.loads(response)
             for value in server['api_key'].split(','):
                 info = info[value]
+            if 'api_strip' in server:
+                strip_char = server['api_strip'][1:-1]
+                info = info.replace(strip_char,'')
             round_shares = int(info)
             self.UpdateShares(args,round_shares)
 

@@ -26,6 +26,7 @@ class Database():
         self.shares = {}
         self.rejects = {}
         self.payout = {}
+        self.user = {}
 
         call = LoopingCall(self.write_database)
         call.start(60)
@@ -38,24 +39,38 @@ class Database():
 
         difficulty = self.bitHopper.difficulty.get_difficulty()
         for server in self.shares:
-            shares = self.shares[server]
-            sql = 'UPDATE '+ str(server) +' SET shares= shares + '+ str(shares) +' WHERE diff='+ str(difficulty)
-            self.curs.execute(sql)
-            shares = 0
+            for user in self.shares[server]:
+                
+                shares = self.shares[server][user]
+                sql = 'UPDATE '+ str(server) +' SET shares= shares + '+ str(shares) +' WHERE diff='+ str(difficulty) + ' and user= \'' + str(user) + "\'"
+                self.curs.execute(sql)
+                if len(self.curs.execute('select * from ' + server + '  WHERE diff='+ str(difficulty) + ' and user= \'' + str(user) + "\'").fetchall()) == 0:
+                    sql = 'INSERT INTO ' + server + ' VALUES ( ' + str(difficulty) + ',' + str(shares) + ',0,0,\'' + user + '\')'
+                    self.curs.execute(sql)
+                self.shares[server][user] = 0
 
         for server in self.rejects:
             rejects = self.rejects[server]
-            sql = 'UPDATE '+ str(server) +' SET rejects= rejects + '+ str(rejects) +' WHERE diff='+ str(difficulty)
+            sql = 'UPDATE '+ str(server) +' SET rejects= rejects + '+ str(rejects) +' WHERE diff='+ str(difficulty) + ' and user = \'\''
             self.curs.execute(sql)
-            rejects = 0
+            if len(self.curs.execute('select * from ' + server + '  WHERE diff='+ str(difficulty) + ' and user= \'\'').fetchall()) == 0:
+                sql = 'INSERT INTO ' + server + ' VALUES ( ' + str(difficulty) + ',0,' + str(rejects) + ',0,\'\')'
+                self.curs.execute(sql)
+
+            self.rejects[server] = 0
 
         for server in self.payout:
             payout = self.payout[server]
-            sql = 'UPDATE '+ str(server) +' SET payout= '+ str(payout) +' WHERE diff='+ str(difficulty)
+            sql = 'UPDATE '+ str(server) +' SET stored_payout= '+ str(payout) +' WHERE diff='+ str(difficulty)+' and user = \'\''
             self.curs.execute(sql)
-            payout = 0
+            if len(self.curs.execute('select * from ' + server + '  WHERE diff='+ str(difficulty) + ' and user= \'\'').fetchall()) == 0:
+                sql = 'INSERT INTO ' + server + ' VALUES ( ' + str(difficulty) + ',0,0,' + str(payout) + ',\'\')'
+                self.curs.execute(sql)
+            self.payout[server] = 0
 
         self.database.commit()
+
+        self.update_user_shares_db()
         
     def check_database(self):
         self.bitHopper.log_msg('Checking Database')
@@ -64,38 +79,43 @@ class Database():
                 versionfd = open(VERSION_FN, 'rb')
                 version = versionfd.read()
                 self.bitHopper.log_msg("DB Verson: " + version)
-                if version != "0.1":
+                if version == "0.1":
                     self.bitHopper.log_msg('Old Database')
-                    os.remove(DB_FN)
                 versionfd.close()
             except:
                 os.remove(DB_FN)
 
         version = open(VERSION_FN, 'wb')
-        version.write("0.1")
+        version.write("0.2")
         version.close()
         
         self.database = sqlite3.connect(DB_FN)
         self.curs = self.database.cursor()
+
+        if version == "0.1":
+            sql = "SELECT name FROM sqlite_master WHERE type='table'"
+            self.curs.execute(sql)
+            result = self.curs.fetchall()
+            for item in result:
+                sql = "ALTER TABLE " + item[0] + " ADD COLUMN user TEXT"
+                self.curs.execute(sql)
+        self.database.commit()
         
         for server_name in self.pool.get_servers():
             difficulty = self.bitHopper.difficulty.get_difficulty()
-            sql = "CREATE TABLE IF NOT EXISTS "+server_name +" (diff REAL, shares INTEGER, rejects INTEGER, stored_payout REAL)"
+            sql = "CREATE TABLE IF NOT EXISTS "+server_name +" (diff REAL, shares INTEGER, rejects INTEGER, stored_payout REAL, user TEXT)"
             self.curs.execute(sql)
+
+        self.database.commit()
         
-        for server in self.pool.get_servers():
-            sql = 'select * from ' + server +' where diff = ' + str(difficulty)
-            rows = self.curs.execute(sql)
-            rows = rows.fetchall()
-            if len(rows) == 0:
-                sql = 'INSERT INTO ' + server + '(diff, shares, rejects, stored_payout) values( '+str(difficulty) +', '+str(0) +', '+str(0) + ', '+str(0)+ ')'
-                self.curs.execute(sql)
         self.bitHopper.log_msg('Database Setup')
 
-    def update_shares(self,server,shares):
+    def update_shares(self,server, shares, user, password):
         if server not in self.shares:
-            self.shares[server] = 0
-        self.shares[server] += shares
+            self.shares[server] = {}
+        if user not in self.shares[server]:
+            self.shares[server][user] = 0
+        self.shares[server][user] += shares
 
     def get_shares(self,server):
         sql = 'select shares from ' + str(server)
@@ -104,6 +124,33 @@ class Database():
         for info in self.curs.fetchall():
             shares += int(info[0])
         return shares
+
+    def get_expected_payout(self,server):
+        sql = 'select shares, diff from ' + str(server)
+        self.curs.execute(sql)
+        result = self.curs.fetchall()
+        expected = 0
+        for item in result:
+            shares = item[0]
+            difficulty = item[1]
+            expected += shares/difficulty * 50
+        return expected
+
+    def update_user_shares_db(self):
+        servers = self.bitHopper.pool.get_servers()
+        user = {}
+        for server in servers:
+            sql = 'select shares, user from ' + server
+            self.curs.execute(sql)
+            result = self.curs.fetchall()
+            for item in result:
+                if item[1] not in user:
+                    user[item[1]] = 0
+                user[item[1]] += item[0]
+        self.user = user
+
+    def get_user_shares(self):
+        return self.user
 
     def update_rejects(self,server,shares):
         if server not in self.rejects:
