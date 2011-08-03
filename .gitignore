@@ -1,7 +1,8 @@
 *.pyc
+*.py~
 *.swp
 db-version
 stats.db
 stats.db-journal
-pool.cfg
+user.cfg
 *.komodoproject

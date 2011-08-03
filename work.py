@@ -8,7 +8,7 @@ import os
 import base64
 import exceptions
 import time
-
+import traceback
 
 from zope.interface import implements
 
@@ -52,17 +52,21 @@ def print_error(x):
     print x
 
 @defer.inlineCallbacks
-def jsonrpc_lpcall(agent,server, url, update):
+def jsonrpc_lpcall(agent,server, url, lp):
     
     global i
     request = json.dumps({'method':'getwork', 'params':[], 'id':i}, ensure_ascii = True)
     i = i +1
-    
-    header = {'Authorization':["Basic " +base64.b64encode(server['user']+ ":" + server['pass'])], 'User-Agent': ['poclbm/20110709'],'Content-Type': ['application/json'] }
+    pool = lp.pool.servers[server]
+    header = {'Authorization':["Basic " +base64.b64encode(pool['user']+ ":" + pool['pass'])], 'User-Agent': ['poclbm/20110709'],'Content-Type': ['application/json'] }
     d = agent.request('GET', "http://" + url, Headers(header), None)
     d.addErrback(print_error)
     body = yield d
-    d = update(body)
+    finish = Deferred()
+    body.deliverBody(WorkProtocol(finish))
+    text = yield finish
+    lp.receive(text,server)
+    defer.returnValue(None)
 
 @defer.inlineCallbacks
 def get(agent,url):
@@ -84,12 +88,14 @@ def jsonrpc_call(agent, server, data , bitHopper):
         d = agent.request('POST', "http://" + server['mine_address'], Headers(header), StringProducer(request))
         response = yield d
         header = response.headers
+
         #Check for long polling header
-        set_lp = bitHopper.lp.set_lp
-        if set_lp != None and set_lp(None, True):
+        lp = bitHopper.lp
+        if lp.check_lp(server['pool_index']):
+            #bitHopper.log_msg('Inside LP check')
             for k,v in header.getAllRawHeaders():
                 if k.lower() == 'x-long-polling':
-                    set_lp(v[0])
+                    lp.set_lp(v[0],server['pool_index'])
                     break
 
         finish = Deferred()
@@ -98,6 +104,7 @@ def jsonrpc_call(agent, server, data , bitHopper):
     except Exception, e:
         bitHopper.log_dbg('Caught, jsonrpc_call insides')
         bitHopper.log_dbg(e)
+        traceback.print_exc
         defer.returnValue(None)
 
     try:

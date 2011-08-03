@@ -74,8 +74,8 @@ class BitHopper():
         self.db.set_payout(server,float(payout))
         self.pool.servers[server]['payout'] = float(payout)
 
-    def lp_callback(self, ):
-        reactor.callLater(0.1,self.new_server.callback,None)
+    def lp_callback(self, work):
+        reactor.callLater(0.1,self.new_server.callback,work)
         self.new_server = Deferred()
 
     def get_json_agent(self, ):
@@ -124,9 +124,7 @@ class BitHopper():
             
         if self.pool.get_current() != server_name:
             self.pool.set_current(server_name)
-            self.log_msg("Server change to " + str(self.pool.get_current()) + ", telling client with LP")
-            self.lp_callback()
-            self.lp.clear_lp()
+            self.log_msg("Server change to " + str(self.pool.get_current()))
 
         return
 
@@ -147,7 +145,7 @@ class BitHopper():
         for index in self.pool.get_servers():
             server = self.pool.get_entry(index)
             if server['lag'] == True:
-                data = yield work.jsonrpc_call(self.json_agent, server,[], None)
+                data = yield work.jsonrpc_call(self.json_agent, server,[], self)
                 if data != None:
                     server['lag'] = False
 
@@ -200,13 +198,13 @@ class BitHopper():
             except Exception, e:
                 self.log_dbg('Loading the request failed')
                 rpc_request = {'params':[],'id':1}
-            #Check for data to be validated
-            pool_server=self.pool.get_entry(self.pool.get_current())
 
-            data = rpc_request['params']
             j_id = rpc_request['id']
+            value = [value]
 
-            work.jsonrpc_getwork(self.json_agent, pool_server, data, j_id, request, self)
+            response = json.dumps({"result":value,'error':None,'id':j_id})
+            request.write(response)
+            request.finish()
 
         except Exception, e:
             self.log_msg('Error Caught in bitHopperLP')
@@ -235,7 +233,7 @@ def main():
     parser.add_option('--disable', type=str, default = None, action='callback', callback=parse_server_disable, help='Servers to disable. Get name from --list. Servera,Serverb,Serverc')
     parser.add_option('--port', type = int, default=8337, help='Port to listen on')
     parser.add_option('--scheduler', type=str, default=None, help='Select an alternate scheduler')
-    parser.add_option('--threshold', type=float, default=0.43, help='Override difficulty threshold (default 0.43)')
+    parser.add_option('--threshold', type=float, default=None, help='Override difficulty threshold (default 0.43)')
     args, rest = parser.parse_args()
     options = args
     bithopper_global.options = args
