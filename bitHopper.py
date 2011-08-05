@@ -75,6 +75,8 @@ class BitHopper():
         self.pool.servers[server]['payout'] = float(payout)
 
     def lp_callback(self, work):
+        if work == None:
+            return
         reactor.callLater(0.1,self.new_server.callback,work)
         self.new_server = Deferred()
 
@@ -166,20 +168,22 @@ class BitHopper():
             new_server = self.getwork_store.get_server(data[0][72:136])
             if new_server != None:
                 current = new_server
-            self.data_callback(current,data, request.getUser(), request.getPassword())
         pool_server=self.pool.get_entry(current)
+
+        work.jsonrpc_getwork(self.json_agent, pool_server, data, j_id, request, self)
 
         if self.options.debug:
             self.log_msg('RPC request ' + str(data) + " submitted to " + str(pool_server['name']))
         else:
             if data == []:
-                """ If request contains no data, tell the user which remote procedure was called instead """
+                #If request contains no data, tell the user which remote procedure was called instead
                 rep = rpc_request['method']
             else:
                 rep = str(data[0][155:163])
             self.log_msg('RPC request [' + rep + "] submitted to " + str(pool_server['name']))
-        work.jsonrpc_getwork(self.json_agent, pool_server, data, j_id, request, self)
 
+        if data != []:
+            self.data_callback(current,data, request.getUser(), request.getPassword())        
         return server.NOT_DONE_YET
 
     def bitHopperLP(self,value, *methodArgs):
@@ -200,7 +204,6 @@ class BitHopper():
                 rpc_request = {'params':[],'id':1}
 
             j_id = rpc_request['id']
-            value = [value]
 
             response = json.dumps({"result":value,'error':None,'id':j_id})
             request.write(response)
@@ -234,6 +237,9 @@ def main():
     parser.add_option('--port', type = int, default=8337, help='Port to listen on')
     parser.add_option('--scheduler', type=str, default=None, help='Select an alternate scheduler')
     parser.add_option('--threshold', type=float, default=None, help='Override difficulty threshold (default 0.43)')
+    parser.add_option('--altslicesize', type=int, default=900, help='Override Default AltSliceScheduler Slice Size of 900')
+    parser.add_option('--altminslicesize', type=int, default=60, help='Override Default Minimum Pool Slice Size of 60 (AltSliceScheduler only)')
+    parser.add_option('--altslicejitter', type=int, default=0, help='Add some random variance to slice size (default disabled)(AltSliceScheduler only)')
     args, rest = parser.parse_args()
     options = args
     bithopper_global.options = args

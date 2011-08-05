@@ -184,8 +184,6 @@
 			
 			function getSlice(payload, srv) {
 				var name = srv['pool_index'];
-                if (payload['sliceinfo'][name] is undefined)
-                    return "n/a"
 				if (payload['sliceinfo'][name] >= 0)
 					return parseFloat(payload['sliceinfo'][name]).toFixed(0)
 				else

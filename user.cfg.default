@@ -11,17 +11,21 @@
 # mine = mines on this pool as usual (diff.*0.43)
 # mine_slush = mines pool until diff.*0.10
 # backup = hopps on this when no Prop. pool is available
-# backup_latehop = prefers this for backup if PPS pool
-#   has high share count, recommended for all backups
-# mine_friendly = usually mines the pool when they hit
+# backup_latehop = prefers this for backup if pool has
+#   high share count (full descr. on page 121, bH thread)
+# mine_charity = usually mines the pool when they hit
 #   and increased diff block (bad luck) + normal mining
 # info = shows share count for this pool on stat page
 # disable = disables pool completely (you can delete 
 # pool's entry in this cfg file too)
 # mine_nmc = setup pool for NMC mining
 # 
-# TODO:
-# (add explanation!)
+# Other variables:
+#
+#  penalty - floating point number, # of shares will be
+#            multiplied by this number when calculating
+#            shares against difficulty
+#
 #########################################################
 
 #######################################
@@ -40,14 +44,16 @@
 #http://mining.bitcoin.cz/accounts/register/
 #CHANGE THIS
 role: mine_slush
+penalty: 4
 user: c00w.testhop
 pass: testhop
 
+
 [ozco]
-# Nice small-medium sized pool
+# Freezing stats for unknown reason (page 114)
 #https://ozco.in/register.php
 #CHANGE THIS
-role: mine
+role: info
 user:c00w.1
 pass:1234
 
@@ -117,14 +123,6 @@ role: info
 user: x
 pass: x
 
-[btcpool24]
-# Small pool good for hopping
-#http://www.btcpool24.com
-#CHANGE THIS
-role: info
-user: Sukrim.hopper
-pass: 1234
-
 [btcserv]
 # Small pool, pls report experience on forum
 #http://btcserv.net/
@@ -135,12 +133,43 @@ pass: y
 
 [bloodys]
 # Another pool for the collection
-# Small pool good for hopping
 #http://pool.bloodys.com
 #CHANGE THIS
 role: info
 user: x
 pass: y
+
+[bcpool]
+# Disables anti-hopper measures for 1% donation (page 111)
+# Anti-hopping method based on "window of participation" (page 36)
+#http://bitcoinpool.com
+#CHANGE THIS (if you want)
+role: info
+user: c00w_test
+pass: x
+
+[nofeemining]
+# Server lags, they're upgrading the service (page 62)
+#https://www.nofeemining.com/ 
+#CHANGE THIS (if you want)
+role: info
+nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
+user: dah4k0r@gmail.com_test
+pass: x
+
+[digbtc]
+#http://www.digbtc.net/register.php
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
+
+[bithasher]
+#http://bithasher.com/index.php/register/
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
 
 ######################################
 # Backup pools for when there is
@@ -202,14 +231,13 @@ user: NJERCMdHz8gEBmdr9pkfUZ2LQuJr17gnFZ
 pass: x
 #passwords can be anything on bitparking
 
-[nofeemining]
-# Server laggs too much, they're upgrading the service (page 62)
-#https://www.nofeemining.com/ 
-#CHANGE THIS (if you want)
+[btcpool24]
+# Changed payout system and delays stats, allot (page 116)
+#http://www.btcpool24.com
+#CHANGE THIS
 role: disable
-nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
-user: dah4k0r@gmail.com_test
-pass: x
+user: Sukrim.hopper
+pass: 1234
 
 [poolmunity]
 # Obscure payout system and anti-hopping measures (page 55)
@@ -267,14 +295,6 @@ pass: x
 #CHANGE THIS (if you want)
 role: disable
 user: c00w.1
-pass: x
-
-[bcpool]
-# Anti-hopping method based on "window of participation" (page 36)
-#http://bitcoinpool.com
-#CHANGE THIS (if you want)
-role: disable
-user: c00w_test
 pass: x
 
 [unitedminers]

@@ -41,15 +41,19 @@ class dynamicSite(resource.Resource):
       
     isleaF = True
     def render_GET(self,request):
+        index_name = 'index.html'
         try:
+          # determine scheduler index.html
+          if hasattr(self.bh.scheduler,'index_html'):
+               index_name = self.bh.scheduler.index_html
           # determine if application is a script file or frozen exe
           if hasattr(sys, 'frozen'):
                 application_path = os.path.dirname(sys.executable)
           elif __file__:
                 application_path = os.path.dirname(__file__)          
-          index = parser.read(os.path.join(application_path, 'index.html'))
+          index = parser.read(os.path.join(application_path, index_name))
         except:
-          index = 'index.html'
+          index = index_name
         file = open(index, 'r')
         linestring = file.read()
         file.close
@@ -77,6 +81,16 @@ class dynamicSite(resource.Resource):
                 except Exception,e:
                     self.bh.log_dbg('Incorrect http post request payout')
                     self.bh.log_dbg(e)
+            if "penalty" in v:
+               try:
+                    server = v.split('-')[1]
+                    info = self.bh.pool.get_entry(server)
+                    info['penalty'] = float(request.args[v][0])                    
+                    self.bh.select_best_server()
+               except Exception,e:
+                    self.bh.log_dbg('Incorrect http post request payout')
+                    self.bh.log_dbg(e)
+
         return self.render_GET(request)
 
 class flatSite(resource.Resource):
@@ -107,18 +121,32 @@ class dataSite(resource.Resource):
 
      isLeaf = True
      def render_GET(self, request):
+
+          #User Info
+          user = {}
+          raw_user = self.bitHopper.db.get_user_shares()
+          for item in raw_user:
+            if raw_user[item] != 0:
+                user[item] = raw_user[item]
+
+          #Slice Info
+          if hasattr(self.bitHopper.scheduler, 'sliceinfo'):
+            sliceinfo = self.bitHopper.scheduler.sliceinfo
+          else:
+            sliceinfo = None
+
           response = json.dumps({
-                "current":self.bitHopper.pool.get_current(), 
-                'mhash':self.bitHopper.speed.get_rate(), 
-                'difficulty':self.bitHopper.difficulty.get_difficulty(), 
-                'servers':self.bitHopper.pool.get_servers(),
-                'user':self.bitHopper.db.get_user_shares()})
+             "current":self.bitHopper.pool.get_current(), 
+             'mhash':self.bitHopper.speed.get_rate(), 
+             'difficulty':self.bitHopper.difficulty.get_difficulty(),
+             'sliceinfo':sliceinfo,
+             'servers':self.bitHopper.pool.get_servers(),
+             'user':user})
           request.write(response)
           request.finish()
           return server.NOT_DONE_YET
 
      #def render_POST(self, request):
-     #     global new_server
      #     bithopper_global.new_server.addCallback(bitHopperLP, (request))
      #     return server.NOT_DONE_YET
 
@@ -157,7 +185,7 @@ class bitSite(resource.Resource):
                 return lpSite(self.bitHopper)
           elif name == 'flat':
                 return flatSite(self.bitHopper)
-          elif name == 'stats':
+          elif name == 'stats' or name == 'index.html':
                 return dynamicSite(self.bitHopper)
           elif name == 'data':
                 return dataSite(self.bitHopper)
