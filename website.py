@@ -8,6 +8,7 @@ import json
 import os
 import sys
 from twisted.web import server, resource
+from twisted.web.http import UNAUTHORIZED
 
 def flat_info(request, bithopper_global):
      response = '<html><head><title>bitHopper Info</title></head><body>'
@@ -51,9 +52,9 @@ class dynamicSite(resource.Resource):
                 application_path = os.path.dirname(sys.executable)
           elif __file__:
                 application_path = os.path.dirname(__file__)          
-          index = parser.read(os.path.join(application_path, index_name))
+          index = os.path.join(application_path, index_name)
         except:
-          index = index_name
+          index = os.path.join(os.curdir(), index_name)
         file = open(index, 'r')
         linestring = file.read()
         file.close
@@ -122,26 +123,25 @@ class dataSite(resource.Resource):
      isLeaf = True
      def render_GET(self, request):
 
-          #User Info
-          user = {}
-          raw_user = self.bitHopper.db.get_user_shares()
-          for item in raw_user:
-            if raw_user[item] != 0:
-                user[item] = raw_user[item]
-
           #Slice Info
           if hasattr(self.bitHopper.scheduler, 'sliceinfo'):
             sliceinfo = self.bitHopper.scheduler.sliceinfo
           else:
             sliceinfo = None
 
+          lp = self.bitHopper.lp.lastBlock
+          if lp == None:
+            lp = {}
+          else :
+            lp = self.bitHopper.lp.blocks[lp]
           response = json.dumps({
              "current":self.bitHopper.pool.get_current(), 
              'mhash':self.bitHopper.speed.get_rate(), 
              'difficulty':self.bitHopper.difficulty.get_difficulty(),
              'sliceinfo':sliceinfo,
              'servers':self.bitHopper.pool.get_servers(),
-             'user':user})
+             'user':self.bitHopper.data.get_users(),
+             'lp':lp})
           request.write(response)
           request.finish()
           return server.NOT_DONE_YET
@@ -158,12 +158,24 @@ class lpSite(resource.Resource):
 
      isLeaf = True
      def render_GET(self, request):
+          self.bitHopper.request_store.add(request)
           self.bitHopper.new_server.addCallback(self.bitHopper.bitHopperLP, (request))
           return server.NOT_DONE_YET
 
      def render_POST(self, request):
+          self.bitHopper.request_store.add(request)
           self.bitHopper.new_server.addCallback(self.bitHopper.bitHopperLP, (request))
           return server.NOT_DONE_YET
+
+class nullsite(resource.Resource):
+    def __init__(self):
+        resource.Resource.__init__(self)    
+    def render_GET(self,request):
+         request.finish()
+         return server.NOT_DONE_YET
+    def render_POST(self,request):
+         request.finish()
+         return server.NOT_DONE_YET
 
 class bitSite(resource.Resource):
 
@@ -172,21 +184,33 @@ class bitSite(resource.Resource):
           self.bitHopper = bitHopper
 
      def render_GET(self, request):
+          self.bitHopper.request_store.add(request)
           self.bitHopper.new_server.addCallback(self.bitHopper.bitHopperLP, (request))
           return server.NOT_DONE_YET
 
      def render_POST(self, request):
           return self.bitHopper.bitHopper_Post(request)
 
-
+     def auth(self,request):
+        if self.bitHopper.auth != None:  
+          user = request.getUser()
+          password = request.getPassword()
+          if user != self.bitHopper.auth[0] or password != self.bitHopper.auth[1]:
+                request.setResponseCode(UNAUTHORIZED)
+                request.setHeader('WWW-authenticate', 'basic realm="%s"' 
+    % "Admin")
+                return False
+        return True
      def getChild(self,name,request):
-          #bithopper_global.log_msg(str(name))
           if name == 'LP':
                 return lpSite(self.bitHopper)
-          elif name == 'flat':
+          if name == 'flat':
+                if not self.auth(request): return nullsite()
                 return flatSite(self.bitHopper)
           elif name == 'stats' or name == 'index.html':
+                if not self.auth(request): return nullsite()
                 return dynamicSite(self.bitHopper)
           elif name == 'data':
+                if not self.auth(request): return nullsite()
                 return dataSite(self.bitHopper)
           return self

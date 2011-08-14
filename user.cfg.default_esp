@@ -11,6 +11,8 @@
 #
 # mine = mina como esta mandado, normal (dificultad*0.43)
 # mine_slush = en esta se queda hasta dificultad.*0.10
+# mine_deepbit = monitorea y prueba suerte minar en
+#   esta mina sin utilizar la api
 # backup = viene a minar en esta si no tiene ninguna 
 #   mina Proporcional disponible
 # backup_latehop = prefiere minar en esta como backup si
@@ -36,8 +38,8 @@
 #
 # Nota: Por favor busca informacion en
 #    el hilo de bitHopper o en otra
-#    fuente confiable sobre cualquier mina
-#    quequieras saltar.
+#    fuente confiable sobre cualquier
+#    mina que quieras saltar.
 #######################################
 
 [slush]
@@ -51,20 +53,13 @@ user: c00w.testhop
 pass: testhop
 
 [ozco]
-# Congela stats sin razon (pagina 114, foro oficial)
+# Stats funcionan
+# Congela stats sin razon (pagina 114, foro oficial bH)
 #https://ozco.in/register.php
 #CAMBIA A CONTINUACION
-role: info
+role: mine
 user:c00w.1
 pass:1234
-
-[polmine]
-# Mina polaca
-#https://polmine.pl
-#CAMBIA A CONTINUACION
-role: mine
-user: c00w1456testhop
-pass: x
 
 [mtred]
 # Buena para saltar, mina rapida para principiantes
@@ -132,16 +127,8 @@ role: info
 user: x
 pass: y
 
-[bloodys]
-# Otra para la coleccion
-#http://pool.bloodys.com
-#CAMBIA A CONTINUACION
-role: info
-user: x
-pass: y
-
 [bcpool]
-# Desactiva las medidas anti-hopper si donas 1% (page 111)
+# Desactiva las medidas anti-hopper si donas 1% (pagina 111)
 # Medidas anti-hopping basadas en "ventana de participacion" (pagina 36,)
 #http://bitcoinpool.com
 #CAMBIA A CONTINUACION
@@ -150,7 +137,7 @@ user: c00w_test
 pass: x
 
 [nofeemining]
-# Server lento, estan actualizando el servicio (page 62)
+# Servidor lento, estan actualizando el servicio (page 62)
 #https://www.nofeemining.com/ 
 #CAMBIA A CONTINUACION
 role: info
@@ -158,10 +145,86 @@ nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
 user: dah4k0r@gmail.com_test
 pass: x
 
-[digbtc]
-# Mina nueva
-#http://www.digbtc.net/register.php
+[deepbit]
+#https://deepbit.net/
 #CAMBIA A CONTINUACION
+role: mine_deepbit
+user: CHANGEME
+pass: CHANGEME
+
+[btcg]
+# Prueba suerte minar con el rol mine_deepbit
+# Ralentiza stats (pagina 87)
+#https://www.btcguild.com/
+#CAMBIA A CONTINUACION (si quieres)
+role: info
+btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
+user: c00w_test
+pass: 1234
+
+[itzod]
+# Sistema de pago por puntuacion, utiliza mine_slush si quieres saltarla (pagina 154)
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
+
+[unitedminers]
+# Desactiva las medidas anti-hopper si donas de tu recompensa (pagina 161)
+# Ha cambiado a sistema PPLNS en medio de una ronda (pagina 94)
+#http://www.unitedminers.com
+#CAMBIA A CONTINUACION (si quieres)
+role: disable
+user: dah4k0r@gmail.com_testhop
+pass: testhop
+
+[btcmine]
+# Sistema de pago por puntuacion (pagina 164)
+#CAMBIA A CONTINUACION (si quieres)
+role: info
+user: your_username
+pass: your_password
+
+[digbtc]
+# Mina pequeña, recomendado que cambies el user-agent en el archivo "work.py" (page 154)
+#http://www.digbtc.net/register.php
+#CAMBIA A CONTINUACION (si quieres)
+role: info
+user: your_username
+pass: your_password
+
+[polmine]
+# Puedes probar minar con el rol mine_deepbit
+# Ralentiza y truca los stats (pagina 157)
+# Mina polaca
+#https://polmine.pl
+#CAMBIA A CONTINUACION
+role: info
+user: c00w1456testhop
+pass: x
+
+[bclc]
+# Puedes probar minar con el rol mine_deepbit
+# Ralentiza stats y no tiene una actitud muy civica con los mineros (pagina 95)
+#http://www.bitcoins.lc
+#CAMBIA A CONTINUACION (si quieres)
+role: info
+user: FSkyvM
+pass: xndzEU
+
+#######################################
+#  Estas minas son muy nuevas para
+# saber si toman medidas anti-hoping
+# Nota: Por favor busca informacion en
+#    el hilo de bitHopper o en otra
+#    fuente confiable sobre cualquier
+#    mina que quieras saltar.
+#######################################
+
+[bloodys]
+# Otra para la coleccion
+#http://pool.bloodys.com
+#CAMBIA A CONTINUACION (si quieres)
 role: info
 user: your_username
 pass: your_password
@@ -169,8 +232,16 @@ pass: your_password
 [bithasher]
 # Mina nueva
 #http://bithasher.com/index.php/register/
-#CAMBIA A CONTINUACION
+#CAMBIA A CONTINUACION (si quieres)
 role: info
+user: your_username
+pass: your_password
+
+[swepool]
+#http://swepool.net/profile
+#CAMBIA A CONTINUACION (si quieres)
+role: info
+swepool_user_apikey: xxxxxx
 user: your_username
 pass: your_password
 
@@ -201,7 +272,7 @@ user: c00w.default
 pass: fire
 
 [bitp]
-# mina PPS
+# Mina PPS
 #http://bitp.it
 #CAMBIA A CONTINUACION
 role: backup
@@ -213,9 +284,16 @@ pass: u5cpmndZq4Jvp
 # mina PPS
 #https://www.ninjacoin.com/index.php
 #CAMBIA A CONTINUACION
-role: backup
+role: disable
 user: paraipanakos.works
 pass: minero
+
+[kiwipool]
+# Cambio a sistema PPS (pagina 154)
+#CAMBIA A CONTINUACION (si quieres)
+role: disable
+user: your_username
+pass: your_password
 
 ######################################
 # Estas minas no se saltan por una
@@ -230,10 +308,20 @@ pass: minero
 # Mina Namecoin, utiliza mine_nmc . Buena para saltar si quieres ganar unos namecoins
 #http://bitparking.com/
 #CAMBIA A CONTINUACION (si quieres)
-role: disable
+role: info
 user: NJERCMdHz8gEBmdr9pkfUZ2LQuJr17gnFZ
 pass: x
 #las contraseñas no importan en BitParking
+
+[oldpolmine]
+# El metodo antiguo para conseguir los stats
+# Delays and fakes stats (page 157)
+# Nice polish pool
+#https://polmine.pl
+#CHANGE THIS
+role: disable
+user: c00w1456testhop
+pass: x
 
 [btcpool24]
 # Ha cambiado el sistema de pagos y ralentiza los stats (pagina 116, foro bH)
@@ -247,7 +335,7 @@ pass: 1234
 # Sistema de pagos desconocido y medidas anti-hopping (pagina 55)
 #http://poolmunity.com/
 #CAMBIA A CONTINUACION (si quieres)
-role: disable
+role: info
 user: c00w.testhop
 pass: testhop
 
@@ -259,28 +347,11 @@ role: disable
 user: testhop
 pass: x 
 
-[bclc]
-# Ralentiza stats y no tiene una actitud muy civica con los mineros (pagina 95)
-#http://www.bitcoins.lc
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: FSkyvM
-pass: xndzEU
-
-[btcg]
-# Ralentiza stats (pagina 87)
-#https://www.btcguild.com/
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
-user: c00w_test
-pass: 1234
-
 [mineco]
 # Ha cambiado sistema de pagos a PPLNS (pagina 94)
 #https://mineco.in
 #CAMBIA A CONTINUACION (si quieres)
-role: disable
+role: info
 user: c00w.test
 pass: x
 
@@ -288,7 +359,7 @@ pass: x
 # Ha cambiado a sistema de pagos a uno por puntuacion (pagina 16)
 #https://eclipsemc.com
 #CAMBIA A CONTINUACION (si quieres)
-role: disable
+role: info
 eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
 user: c00w_worker
 pass: x
@@ -301,10 +372,3 @@ role: disable
 user: c00w.1
 pass: x
 
-[unitedminers]
-# Ha cambiado a sistema PPLNS en medio de una ronda (pagina 94)
-#http://www.unitedminers.com
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: dah4k0r@gmail.com_testhop
-pass: testhop

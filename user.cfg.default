@@ -10,6 +10,8 @@
 #
 # mine = mines on this pool as usual (diff.*0.43)
 # mine_slush = mines pool until diff.*0.10
+# mine_deepbit = monitor and makes educated guess mining
+#   without using the api
 # backup = hopps on this when no Prop. pool is available
 # backup_latehop = prefers this for backup if pool has
 #   high share count (full descr. on page 121, bH thread)
@@ -25,6 +27,9 @@
 #  penalty - floating point number, # of shares will be
 #            multiplied by this number when calculating
 #            shares against difficulty
+#            BACKUP SERVERS: Set it to the percent the server takes. 
+#            The penalty/100 is added to the reject rate when calculating 
+#            which server to use
 #
 #########################################################
 
@@ -44,26 +49,18 @@
 #http://mining.bitcoin.cz/accounts/register/
 #CHANGE THIS
 role: mine_slush
-penalty: 4
+penalty: 1
 user: c00w.testhop
 pass: testhop
 
-
 [ozco]
+# Stats solved
 # Freezing stats for unknown reason (page 114)
 #https://ozco.in/register.php
 #CHANGE THIS
-role: info
+role: mine
 user:c00w.1
 pass:1234
-
-[polmine]
-# Nice polish pool
-#https://polmine.pl
-#CHANGE THIS
-role: mine
-user: c00w1456testhop
-pass: x
 
 [mtred]
 # Good for hopping, fast pool for hopper-starters
@@ -131,19 +128,11 @@ role: info
 user: x
 pass: y
 
-[bloodys]
-# Another pool for the collection
-#http://pool.bloodys.com
-#CHANGE THIS
-role: info
-user: x
-pass: y
-
 [bcpool]
 # Disables anti-hopper measures for 1% donation (page 111)
 # Anti-hopping method based on "window of participation" (page 36)
 #http://bitcoinpool.com
-#CHANGE THIS (if you want)
+#CHANGE THIS
 role: info
 user: c00w_test
 pass: x
@@ -151,14 +140,90 @@ pass: x
 [nofeemining]
 # Server lags, they're upgrading the service (page 62)
 #https://www.nofeemining.com/ 
-#CHANGE THIS (if you want)
+#CHANGE THIS
 role: info
 nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
 user: dah4k0r@gmail.com_test
 pass: x
 
+[deepbit]
+#https://deepbit.net/
+#CHANGE THIS
+role: mine_deepbit
+user: CHANGEME
+pass: CHANGEME
+
+[btcg]
+# Try mining here with the mine_deepbit role
+# Delayed stats (page 87)
+#https://www.btcguild.com/
+#CHANGE THIS (if you want)
+role: info
+btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
+user: c00w_test
+pass: 1234
+
+[itzod]
+# Score based payout, hop using mine_slush if you want (page 154)
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
+
+[unitedminers]
+# Disables anti-hopper flagging if you donate to pool (page 161)
+# Changed to PPLNS in the middle of a round (page 94)
+#http://www.unitedminers.com
+#CHANGE THIS (if you want)
+role: info
+user: dah4k0r@gmail.com_testhop
+pass: testhop
+
+[btcmine]
+# Score based payout (page 164)
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
+
 [digbtc]
+# Small pool, recommended you change user-agent in file "work.py" (page 154)
 #http://www.digbtc.net/register.php
+#CHANGE THIS (if you want)
+role: info
+user: your_username
+pass: your_password
+
+[polmine]
+# You could try mining here with the mine_deepbit role
+# Delays and fakes stats (page 157)
+# Nice polish pool
+#https://polmine.pl
+#CHANGE THIS
+role: info
+user: c00w1456testhop
+pass: x
+
+[bclc]
+# You could try mining here with the mine_deepbit role
+# Delaying stats and not very civic attitude with occasional miners (page 95)
+#http://www.bitcoins.lc
+#CHANGE THIS (if you want)
+role: info
+user: FSkyvM
+pass: xndzEU
+
+#######################################
+#   These Pools are added recently
+#      hop them at your risk
+# Advice: Please search the bitHopper
+# forum thread for detailed information
+# on every pool you want to hop
+#######################################
+
+[bloodys]
+# Another pool for the collection
+#http://pool.bloodys.com
 #CHANGE THIS (if you want)
 role: info
 user: your_username
@@ -168,6 +233,14 @@ pass: your_password
 #http://bithasher.com/index.php/register/
 #CHANGE THIS (if you want)
 role: info
+user: your_username
+pass: your_password
+
+[swepool]
+#http://swepool.net/profile
+#CHANGE THIS (if you want)
+role: info
+swepool_user_apikey: xxxxxx
 user: your_username
 pass: your_password
 
@@ -209,9 +282,16 @@ pass: u5cpmndZq4Jvp
 # PPS pool
 #https://www.ninjacoin.com/index.php
 #CHANGE THIS
-role: backup
+role: disable
 user: paraipanakos.works
 pass: minero
+
+[kiwipool]
+# Switched to PPS (page 154)
+#CHANGE THIS (if you want)
+role: disable
+user: your_username
+pass: your_password
 
 ######################################
 # These Pools are not hopped for a
@@ -226,10 +306,20 @@ pass: minero
 # Namecoin pool, use mine_nmc . Good for hopping if you want some namecoins
 #http://bitparking.com/
 #CHANGE THIS (if you want)
-role: disable
+role: info
 user: NJERCMdHz8gEBmdr9pkfUZ2LQuJr17gnFZ
 pass: x
 #passwords can be anything on bitparking
+
+[oldpolmine]
+# Old re exp. polmine stats
+# Delays and fakes stats (page 157)
+# Nice polish pool
+#https://polmine.pl
+#CHANGE THIS
+role: disable
+user: c00w1456testhop
+pass: x
 
 [btcpool24]
 # Changed payout system and delays stats, allot (page 116)
@@ -243,7 +333,7 @@ pass: 1234
 # Obscure payout system and anti-hopping measures (page 55)
 #CHANGE THIS (if you want)
 #http://poolmunity.com/
-role: disable
+role: info
 user: c00w.testhop
 pass: testhop
 
@@ -255,28 +345,11 @@ role: disable
 user: testhop
 pass: x 
 
-[bclc]
-# Delaying stats and not very civic attitude with occasional miners (page 95)
-#http://www.bitcoins.lc
-#CHANGE THIS (if you want)
-role: disable
-user: FSkyvM
-pass: xndzEU
-
-[btcg]
-# Delayed stats (page 87)
-#https://www.btcguild.com/
-#CHANGE THIS (if you want)
-role: disable
-btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
-user: c00w_test
-pass: 1234
-
 [mineco]
 # Changed to PPLNS (page 94)
 #https://mineco.in
 #CHANGE THIS (if you want)
-role: disable
+role: info
 user: c00w.test
 pass: x
 
@@ -284,7 +357,7 @@ pass: x
 # Changed to a score system (page 16)
 #https://eclipsemc.com
 #CHANGE THIS (if you want)
-role: disable
+role: info
 eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
 user: c00w_worker
 pass: x
@@ -297,10 +370,3 @@ role: disable
 user: c00w.1
 pass: x
 
-[unitedminers]
-# Changed to PPLNS in the middle of a round (page 94)
-#http://www.unitedminers.com
-#CHANGE THIS (if you want)
-role: disable
-user: dah4k0r@gmail.com_testhop
-pass: testhop
