@@ -17,7 +17,7 @@ except:
 class Pool():
     def __init__(self,bitHopper):
         self.servers = {}
-        self.api_pull = ['mine','info','mine_slush','mine_nmc','mine_ixc','mine_charity','mine_deepbit','backup','backup_latehop']
+        self.api_pull = ['mine','info','mine_slush','mine_nmc','mine_ixc','mine_i0c','mine_charity','mine_deepbit','backup','backup_latehop']
 
         parser = ConfigParser.SafeConfigParser()
         try:
@@ -65,7 +65,10 @@ class Pool():
             self.servers[server]['last_pulled'] = time.time()
             self.servers[server]['lag'] = False
             self.servers[server]['api_lag'] = False
-            self.servers[server]['refresh_time'] = 120
+            if 'refresh_time' not in self.servers[server]:
+                self.servers[server]['refresh_time'] = 120
+            else:
+                self.servers[server]['refresh_time'] = int(self.servers[server]['refresh_time'])
             if 'refresh_limit' not in self.servers[server]:
                 self.servers[server]['refresh_limit'] = 120
             else:
@@ -205,6 +208,8 @@ class Pool():
 
         elif server['api_method'] == 're':
             output = re.search(server['api_key'],response)
+            if output == None:
+                return
             if 'api_group' in server:
                 output = output.group(int(server['api_group']))
             else:
@@ -395,7 +400,7 @@ class Pool():
             return
         info = self.servers[server]
         self.bitHopper.scheduler.update_api_server(server)
-        d = work.get(self.bitHopper.json_agent,info['api_address'])
+        d = self.bitHopper.work.get(info['api_address'])
         d.addCallback(self.selectsharesResponse, (server))
         d.addErrback(self.errsharesResponse, (server))
         d.addErrback(self.bitHopper.log_msg)
@@ -406,7 +411,7 @@ class Pool():
             info = self.servers[server]
             update = self.api_pull
             if info['role'] in update:
-                d = work.get(self.bitHopper.json_agent,info['api_address'])
+                d = bitHopper.work.get(info['api_address'])
                 d.addCallback(self.selectsharesResponse, (server))
                 d.addErrback(self.errsharesResponse, (server))
                 d.addErrback(self.bitHopper.log_msg)

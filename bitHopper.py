@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+#bitHopper by Colin Rice is licensed under a Creative Commons
+# Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 #Based on a work at github.com.
 
 import json
@@ -17,16 +18,13 @@ import request_store
 import data
 
 import sys
-import exceptions
 import optparse
 import time
 import lp
-import os.path
 import os
+import os.path
 
 from twisted.web import server, resource
-from client import Agent
-from _newclient import Request
 from twisted.internet import reactor, defer
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
@@ -37,12 +35,8 @@ from lpbot import LpBot
 
 class BitHopper():
     def __init__(self, options):
+        """Initializes all of the submodules bitHopper uses"""
         self.options = options
-        try:
-            self.json_agent = twisted.web.client.Agent(reactor, connectTimeout=5)
-        except:
-            self.json_agent = twisted.web.client.Agent(reactor)
-        self.lp_agent = Agent(reactor, persistent=True)
         self.new_server = Deferred()
         self.stats_file = None
         self.lpBot = None
@@ -59,8 +53,9 @@ class BitHopper():
         self.data = data.Data(self)
         self.pool.setup(self)
         self.auth = None
+        self.work = work.Work(self)
 
-    def reject_callback(self,server,data, user, password):
+    def reject_callback(self, server, data, user, password):
         self.data.reject_callback(server,data, user, password)
 
     def data_callback(self,server,data, user, password):
@@ -73,7 +68,9 @@ class BitHopper():
     def lp_callback(self, work):
         if work == None:
             return
-        reactor.callLater(0.1,self.new_server.callback,work)
+        merkle_root = work['data'][72:136]
+        self.getwork_store.add(server,merkle_root)
+        reactor.callLater(0,self.new_server.callback,work)
         self.new_server = Deferred()
 
     def get_json_agent(self):
@@ -145,7 +142,7 @@ class BitHopper():
         for server in self.pool.get_servers():
             info = self.pool.servers[server]
             if info['lag'] == True:
-                data = yield work.jsonrpc_call(self.json_agent, server,[], self)
+                data = yield self.work.jsonrpc_call(server,[])
                 self.log_dbg('Got' + server + ":" + str(data))
                 if data != None:
                     info['lag'] = False
@@ -153,45 +150,15 @@ class BitHopper():
                 else:
                     self.log_dbg('Not delagging')
 
-    def bitHopper_Post(self,request):
-        self.request_store.add(request)
-        if not self.options.noLP:
-            request.setHeader('X-Long-Polling', '/LP')
-        rpc_request = json.loads(request.content.read())
-        #check if they are sending a valid message
-        if rpc_request['method'] != "getwork":
-            return json.dumps({'result':None, 'error':'Not supported', 'id':rpc_request['id']})
-
-        #Check for data to be validated
-        current = self.pool.get_current()
-
-        data = rpc_request['params']
-        j_id = rpc_request['id']
-        if data != []:
-            new_server = self.getwork_store.get_server(data[0][72:136])
-            if new_server != None:
-                current = new_server
-
-        work.jsonrpc_getwork(self.json_agent, current, data, j_id, request, self)
-
-        if self.options.debug:
-            self.log_msg('RPC request ' + str(data) + " submitted to " + current)
-        else:
-            if data == []:
-                #If request contains no data, tell the user which remote procedure was called instead
-                rep = rpc_request['method']
-            else:
-                rep = str(data[0][155:163])
-            self.log_msg('RPC request [' + rep + "] submitted to " + current)
-
-        if data != []:
-            self.data_callback(current,data, request.getUser(), request.getPassword())        
-        return server.NOT_DONE_YET
 
     def bitHopperLP(self, value, *methodArgs):
         try:
             self.log_msg('LP triggered serving miner')
             request = methodArgs[0]
+
+            if self.request_store.closed(request):
+                return value
+
             #Duplicated from above because its a little less of a hack
             #But apparently people expect well formed json-rpc back but won't actually make the call
             try:
@@ -248,13 +215,12 @@ def main():
     parser.add_option('--altminslicesize', type=int, default=60, help='Override Default Minimum Pool Slice Size of 60 (AltSliceScheduler only)')
     parser.add_option('--altslicejitter', type=int, default=0, help='Add some random variance to slice size, disabled by default (AltSliceScheduler only)')
     parser.add_option('--startLP', action= 'store_true', default = True, help='Seeds the LP module with known pools. Must use it for LP based hopping with deepbit, True by default')
-    parser.add_option('--p2pLP', action='store_true', default=False, help='Starts up an IRC bot to validate LP based hopping.  Must be used with --startLP');
+    parser.add_option('--p2pLP', action='store_true', default=False, help='Starts up an IRC bot to validate LP based hopping.  Must be used with --startLP')
     parser.add_option('--ip', type = str, default='', help='IP to listen on')
     parser.add_option('--auth', type = str, default=None, help='User,Password')
-    args, rest = parser.parse_args()
-    options = args
+    options, rest = parser.parse_args()
     global bithopper_global
-    bithopper_global = BitHopper(args)
+    bithopper_global = BitHopper(options)
 
     if options.list:
         for k in bithopper_global.pool.get_servers():
@@ -271,8 +237,10 @@ def main():
     if options.listschedulers:
         schedulers = None
         for s in Scheduler.__subclasses__():
-            if schedulers != None: schedulers = schedulers + ", " + s.__name__
-            else: schedulers = s.__name__
+            if schedulers != None: 
+                schedulers = schedulers + ", " + s.__name__
+            else: 
+                schedulers = s.__name__
         print "Available Schedulers: " + schedulers
         return
     
@@ -311,7 +279,7 @@ def main():
 
     if options.p2pLP and options.startLP:
         bithopper_global.log_msg('Starting p2p LP')
-        bithopper_global.lpBot = LpBot()
+        bithopper_global.lpBot = LpBot(bithopper_global)
 
     site = server.Site(website.bitSite(bithopper_global))
     reactor.listenTCP(options.port, site,5, options.ip)

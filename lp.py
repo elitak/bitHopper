@@ -2,7 +2,6 @@
 #bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 #Based on a work at github.com.
 
-import work
 import json
 import exceptions
 import time
@@ -43,7 +42,7 @@ class LongPoll():
         # Do a getwork.
         for server in self.pool.servers:
             info = self.pool.servers[server]
-            if info['role'] not in ['mine','mine_charity','mine_deepbit','info', 'backup','backup_latehop']:
+            if info['role'] not in ['mine','mine_charity','mine_deepbit','mine_i0c','info','backup','backup_latehop','disable']:
                 continue
             if info['lp_address'] != None:
                 self.pull_lp(info['lp_address'],server)
@@ -53,27 +52,33 @@ class LongPoll():
                 
     def pull_server(self,server):
         # A helper function so that we can have this in a different call.
-        work.jsonrpc_call(self.bitHopper.json_agent, server, [], self.bitHopper)
+        self.bitHopper.work.jsonrpc_call(server, [])
 
     def lp_api(self,server,block):
-        old_shares = self.bitHopper.pool.servers[server]['shares']
-        self.bitHopper.pool.servers[server]['shares'] = 0
-        self.bitHopper.select_best_server()
-        if '_defer' not in self.blocks[block]:
-            self.blocks[block]['_defer'] = defer.Deffered()
-        self.blocks[block]['_defer'].addCallback(self.api_check,server,block,old_shares)
+	if self.bitHopper.pool.servers[server]['role'] == 'mine_deepbit':
+            self.set_owner(server)
+            old_shares = self.bitHopper.pool.servers[server]['shares']
+            self.bitHopper.pool.servers[server]['shares'] = 0
+            self.bitHopper.select_best_server()
+            if '_defer' not in self.blocks[block]:
+                self.blocks[block]['_defer'] = defer.Deferred()
+            self.blocks[block]['_defer'].addCallback(self.api_check,server,block,old_shares)
+	elif self.lastBlock != None and self.blocks[self.lastBlock]["_owner"] != server and '_defer' in self.blocks[self.lastBlock]:
+            # Don't switch, just reset shares
+            self.blocks[self.lastBlock]['_reset']=True
+            self.blocks[self.lastBlock]['_defer'].callback(server)
 
-    def lp_api_check(self,new_server, server, block, old_shares):
-        if self.blocks[block]['_owner'] != server:
+    def api_check(self, server, block, old_shares):
+        if self.blocks[block]['_owner'] != server or self.blocks[block]['_reset']:
+            self.bitHopper.pool.servers[server]['_reset']=False
             self.bitHopper.pool.servers[server]['shares'] += old_shares
             self.bitHopper.select_best_server()
-        return new_server
 
     def receive(self, body, server):
         self.polled[server].release()
         self.bitHopper.log_dbg('received lp from: ' + server)
         info = self.bitHopper.pool.servers[server]
-        if info['role'] in ['mine_nmc','disable','mine_ixc']:
+        if info['role'] in ['mine_nmc','disable','mine_ixc','mine_i0c']:
             return
         if body == None:
             self.bitHopper.log_dbg('error in lp from: ' + server)
@@ -97,13 +102,14 @@ class LongPoll():
                 else:
                     self.bitHopper.log_msg('New Block: ' + str(block))
                     self.bitHopper.log_msg('Block Owner ' + server)
-                    if self.bitHopper.lpBot != None:
-                        self.bitHopper.lpBot.announce(str(server), str(block))
-                    self.blocks[block] = {}
+                    self.blocks[block]={}
                     self.bitHopper.lp_callback(work)
                     self.blocks[block]["_owner"] = server
-                    if self.bitHopper.pool.servers[server]['role'] == 'mine_deepbit':
-                        self.lp_api(server, block)
+                    if self.bitHopper.lpBot != None:
+                        self.bitHopper.lpBot.announce(str(server), str(block))
+                    else:
+                        if self.bitHopper.pool.servers[server]['role'] == 'mine_deepbit':
+                            self.lp_api(server, block)
                         
             if self.bitHopper.pool.servers[server]['role'] == 'mine_deepbit':
                 self.lastBlock = block
@@ -150,13 +156,15 @@ class LongPoll():
             lp_address = str(pool['mine_address']) + str(url)
         else:
             lp_address = str(url)
+        if lp_address[0:7] != 'http://':
+            lp_address = "http://" + lp_address
         try:
             if self.polled[server].acquire(False):
                 if output:
                     self.bitHopper.log_msg("LP Call " + lp_address)
                 else:
                     self.bitHopper.log_dbg("LP Call " + lp_address)
-                work.jsonrpc_lpcall(self.bitHopper.get_lp_agent(),server, lp_address, self)
+                self.bitHopper.work.jsonrpc_lpcall(server, lp_address, self)
         except Exception,e :
             self.bitHopper.log_dbg('pull_lp error')
             self.bitHopper.log_dbg(e)
