@@ -7,18 +7,12 @@
 from eventlet.green import os
 import json
 import sys
-
+import traceback
 import webob
 
 class dynamicSite():
     def __init__(self, bitHopper):
         self.bh = bitHopper
-
-    def handle(self, env, start_response):
-        start_response('200 OK', [('Content-Type', 'text/html')])
-        #Handle Possible Post values
-        self.handle_POST(webob.Request(env))
-
         index_name = 'index.html'
         try:
             # determine scheduler index.html
@@ -33,9 +27,16 @@ class dynamicSite():
         except:
             index = os.path.join(os.curdir, index_name)
         index_file = open(index, 'r')
-        line_string = index_file.read()
+        self.line_string = index_file.read()
         index_file.close()
-        return line_string
+
+    def handle(self, env, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+
+        #Handle Possible Post values
+        self.handle_POST(webob.Request(env))
+
+        return self.line_string
 
     def handle_POST(self, request):
         for v in request.POST:
@@ -61,10 +62,15 @@ class dynamicSite():
                 try:
                     server = v.split('-')[1]
                     info = self.bh.pool.get_entry(server)
-                    info['penalty'] = float(request.POST[v])                    
+                    old_penalty = 1
+                    if 'penalty' in info:
+                        old_penalty = info['penalty']
+                    new_penalty = float(request.POST[v])
+                    self.bh.log_msg('Set ' + server + ' penalty from ' + str(old_penalty) + ' to ' + str(new_penalty))
+                    info['penalty'] = new_penalty                    
                     self.bh.select_best_server()
                 except Exception, e:
-                    self.bh.log_dbg('Incorrect http post request payout')
+                    self.bh.log_dbg('Incorrect http post request penalty: ' + str(v))
                     self.bh.log_dbg(e)
             if "resetscheduler" in v:
                 self.bh.log_msg('User forced scheduler reset')
@@ -87,7 +93,7 @@ class dynamicSite():
             if "reloadconfig" in v:
                 self.bh.log_msg('User forced configuration reload')
                 try:
-                    self.bh.pool.loadConfig(self.bh)
+                    self.bh.pool.loadConfig()
                 except Exception,e:
                     self.bh.log_dbg('Incorrect http post reloadconfig')
                     self.bh.log_dbg(e)
@@ -102,6 +108,26 @@ class dynamicSite():
                 except Exception,e:
                     self.bh.log_dbg('Incorrect http post resetUserShares')
                     self.bh.log_dbg(e)
+            if "enableDebug" in v:
+                self.bh.log_dbg('User enabled DEBUG from web')
+                self.bh.options.debug = True
+            if "disableDebug" in v:
+                self.bh.options.debug = False
+                self.bh.log_msg('User disabled DEBUG from web')
+            if "setLPPenalty" in v:
+                try:
+                    server = v.split('-')[1]
+                    info = self.bh.pool.get_entry(server)
+                    old_lp_penalty = 0
+                    if 'lp_penalty' in info:
+                        old_lp_penalty = info['lp_penalty']
+                    new_lp_penalty = float(request.POST[v])
+                    self.bh.log_msg("Updating LP Penalty for " + server + " from " + str(old_lp_penalty) + ' to ' + str(new_lp_penalty))
+                    info['lp_penalty'] = new_lp_penalty
+                except Exception, e:
+                    self.bh.log_dbg('Incorrect http post request setLPPenalty: ' + str(v))
+                    self.bh.log_dbg(e)
+
 
 class dataSite():
 
@@ -150,6 +176,7 @@ class bitSite():
 
     def __init__(self, bitHopper):
         self.bitHopper = bitHopper
+        self.dynamicSite = dynamicSite(self.bitHopper)
 
     def handle_start(self, env, start_response):
         if env['PATH_INFO'] in ['','/']:
@@ -160,7 +187,7 @@ class bitSite():
             site = nullsite()
         else:
             if env['PATH_INFO'] in ['/stats', '/index.html', '/index.htm']:
-                site = dynamicSite(self.bitHopper)
+                site = self.dynamicSite
             elif env['PATH_INFO'] == '/data':
                 site = dataSite(self.bitHopper)
             else:
@@ -170,7 +197,9 @@ class bitSite():
         except Exception, e:
             self.bitHopper.log_msg('Error in a wsgi function')
             self.bitHopper.log_msg(e)
+            #traceback.print_exc()
             return [""]
+
     def handle(self, env, start_response):
         return self.bitHopper.work.handle(env, start_response)
 
