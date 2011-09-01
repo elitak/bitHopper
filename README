@@ -7,18 +7,30 @@ Based on a work at github.com
 
 # Ubuntu installation
 
-In order to run bitHopper you need to install greenlet module over Python 2.7+ (lookup your allready
-installed version of Python with "python -V"):
+In order to run bitHopper you need to have Python installed in your system. Version 2.7 of Python is suggested
+although it has been tested and appears to work with version 2.6 too. To find out which version of Python your
+system currently has type "python -V" to a shell console.
+
+If you don't have Python installed at all you have to run:
+
+sudo apt-get install python
+
+After verifying that you have Python installed then you have to install some extra packages that bitHopper
+requires to function properly:
 
 sudo apt-get install python-dev python-setuptools
 sudo easy_install greenlet
+sudo easy_install importlib
 
-Tested and woking for Ubuntu 11.04, 10.10 and 10.04 LTS
+If you would like to use the poclbm miner plugin do
+sudo easy_install numpy
+
+Tested and working in Ubuntu 11.04, 10.10 and 10.04 LTS
 
 
 # Instructions for Windows users
 
-ActiveState Python(recommended, use 32 bit even when you have 64 bit system, it will still work)
+ActiveState Python(recommended, use 32 bit even when you have 64 bit system)
 http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi
 
 Greenlet
@@ -53,8 +65,9 @@ extract itself into correct directory.
 BitHopper Stats page: http://localhost:8337/stats
 
 Copy "user.cfg.default" to a new file called "user.cfg" then modify the new file to include your pool 
-worker usernames and passwords. Run "python bitHopper.py" in *nix or in Windows you can double click on
-run-bithopper.bat. After script updates info check if new pools have been added correctly to stats page.
+worker usernames and passwords. Repeat with "bh.cfg.default" and make sure default values work for you.
+Run "python bitHopper.py" in *nix or in Windows you can double click on run-bithopper.bat. After script
+updates info check if the pools have been added correctly to your stats page.
 
 If any of the pools turns red or there is something else missing then edit your "user.cfg" accordingly.
 
@@ -67,15 +80,15 @@ with any username and password (not blank).
 
 You can launch bitHopper with the following parameters:
 
-	--ip                  = IP to listen on
-	--port                = Port to listen on
-	--auth                = Ask for user and password on stats page (--auth user,pass)
-	--listschedulers      = List alternate schedulers available
-	--scheduler           = Select an alternate scheduler
-	--threshold           = Override difficulty threshold (default 0.43)
-	--p2pLP               = Starts up an IRC bot to validate LP based hopping
-	--debug               = Extra error output. Basically print all caught errors
-	--trace               = Extra debugging output
+   --ip                  = IP to listen on
+   --port                = Port to listen on
+   --auth                = Ask for user and password on stats page (--auth user,pass)
+   --listschedulers      = List alternate schedulers available
+   --scheduler           = Select an alternate scheduler
+   --threshold           = Override difficulty threshold (default 0.43)
+   --p2pLP               = Starts up an IRC bot to validate LP based hopping
+   --debug               = Extra error output. Basically print all caught errors
+   --trace               = Extra debugging output
 
 
 # Available Schedulers:
@@ -98,12 +111,12 @@ be issues with failing to re-slice often enough.
 
 Specific parameters:
 
-	--altslicesize            = Override Default AltSliceScheduler Slice Size of 900
-	--altminslicesize         = Override Default Minimum Pool Slice Size of 60 (AltSliceScheduler only)
-	--altslicejitter          = Add some random variance to slice size, disabled by default (AltSliceScheduler only)
-	--altsliceroundtimebias   = Bias slicing slightly by round time duration with respect to round time target (default false)
-	--altsliceroundtimetarget = Round time target based on GHash/s (default 1000 Ghash/s)
-	--altsliceroundtimemagic  = Round time magic number, increase to bias towards round time over shares
+   --altslicesize            = Override Default AltSliceScheduler Slice Size of 900
+   --altminslicesize         = Override Default Minimum Pool Slice Size of 60 (AltSliceScheduler only)
+   --altslicejitter          = Add some random variance to slice size, disabled by default (AltSliceScheduler only)
+   --altsliceroundtimebias   = Bias slicing slightly by round time duration with respect to round time target (default false)
+   --altsliceroundtimetarget = Round time target based on GHash/s (default 1000 Ghash/s)
+   --altsliceroundtimemagic  = Round time magic number, increase to bias towards round time over shares
 
 
    RoundTimeScheduler
@@ -118,7 +131,9 @@ Not currently in use.
 # Skins
 
 You can change the color scheme on the status page. Skins and .jpg preview are located in the StatSkin sub directory.
-Just copy the index file to the main directory to change skin and hit refresh on your browser. No need to restart.
+Just rename your choice to index.html and copy to the main directory to change skin. (Current version requires you to restart bH)
+Tested and working on the following browsers: Firefox 6 (Win 7; Android); Chrome 13 (Win 7)
+Known issues with the following browsers: WebKit (Android 2.3.4); Internet Explorer 9 (Win 7)
 
 
 # More help
@@ -144,5 +159,5 @@ If you think this project is cool and you want more features added consider maki
 
  flower1024, echiu64 (ed64), graphiclunarkid, elitak, Clipseza, littleant, bb-btc, gnaget, murfshake, Sukrim, gtrrkicw,
  swordv2, bitcoindaddy, rkozola, ryouiki, starlightbreaker, hawks5999, erasmo, pueytan, macboy80, sdogi, joulesbeef,
- Seoulboy1, paraipanakos, Swicher
+ Seoulboy1, paraipanakos, Swicher, lucita777
 

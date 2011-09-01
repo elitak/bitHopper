@@ -3,11 +3,14 @@
 #Based on a work at github.com.
 
 import eventlet
-from eventlet.green import os, threading
+from eventlet.green import os, threading, socket
 import eventlet.patcher
 #sqlite3 = eventlet.patcher.import_patched("sqlite3")
 import sqlite3
 import sys
+
+# Global timeout for sockets in case something leaks
+socket.setdefaulttimeout(900)
 
 try:
     # determine if application is a script file or frozen exe
@@ -133,11 +136,11 @@ class Database():
 
         self.database.commit()
 
-        self.bitHopper.log_dbg('Database Setup')
-
     def get_users(self):
-        #Get an dictionary of user information to seed data.py
-        #This is a direct database lookup and should only be called once
+        """
+        Get a dictionary of user information to seed data.py
+        This is a direct database lookup and should only be called once
+        """
         with self.lock:
             users = {}
             servers = self.bitHopper.pool.get_servers()
