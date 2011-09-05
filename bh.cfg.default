@@ -1,5 +1,6 @@
 # These settings will override any command line options
 # Not all options are runtime reloadable
+#
 # Non-runtime configurable:
 #    main/scheduler
 #    main/port
@@ -7,16 +8,17 @@
 
 [main]
 # main port for miners
-#port = 8337
+port = 8337
 
-# active scheduler 
+# active scheduler
 scheduler = DefaultScheduler
+#scheduler = SimpleSliceScheduler
 #scheduler = AltSliceScheduler
 
 # waiting time for checking pools conectivity
 delag_sleep = 20
 
-# time in seconds to refresh pool stats
+# default time in seconds to refresh pool stats (can be overriden in user.cfg on a per pool basis)
 pool_refreshlimit = 120
 
 # upper mining limit on pools
@@ -51,9 +53,30 @@ roundtimebias = False
 roundtimetarget = 1000
 roundtimemagic = 10
 
+[pluginmode]
+# Plugin loading modes: 
+#    auto - loads everything automatically
+#    manual - specify which plugins you want to load below
+#    disabled - disable plugin loading completely
+mode = auto
+
+[plugins]
+test = True
+backdoor = True
+apiangel = True
+poclbm = False
+# Probably need the one below in the future
+lpbot = False
+
 [backdoor]
-enabled = False
 port = 3000
+
+[apiangel]
+# APIAngel will look for api_disable pools and restore them
+#  - Checks every "interval" seconds
+#  - Restores if "last_pulled" + "reincarnateInterval" > now (current time in seconds)
+interval = 60
+reincarnateInterval = 3600
 
 [lpbot]
 irc_server = irc.bithopper.org
