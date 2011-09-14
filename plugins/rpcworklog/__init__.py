@@ -1,8 +1,8 @@
 import traceback
-from apiangel import APIAngel
+from rpcworklog import RPCWorkLog
 
 def main(bitHopper):
     try:
-        me = APIAngel(bitHopper)
+        me = RPCWorkLog(bitHopper)
     except Exception, e:
         traceback.print_exc()

@@ -41,7 +41,7 @@ class Difficulty():
         # Generic method to update the difficulty of a given currency
         self.bitHopper.log_msg('Updating Difficulty of ' + coin)
         try:
-            timeout = eventlet.timeout.Timeout(5, Exception(''))
+            #timeout = eventlet.timeout.Timeout(5, Exception(''))
             useragent = {'User-Agent': self.bitHopper.config.get('main', 'work_user_agent')}
             req = urllib2.Request(url_diff, headers = useragent)
             response = urllib2.urlopen(req)
@@ -56,7 +56,8 @@ class Difficulty():
         except Exception, e:
             self.bitHopper.log_dbg('Unable to update difficulty for ' + coin + ': ' + str(e))
         finally:
-            timeout.cancel()
+            #timeout.cancel()
+            pass
 
     def update_difficulty(self):
         while True:
@@ -64,8 +65,8 @@ class Difficulty():
             with self.lock:
                 
                 self.updater("Bitcoin", 'http://blockexplorer.com/q/getdifficulty', 'difficulty')
-                self.updater("Namecoin", 'http://namebit.org/', 'nmc_difficulty', '<td id="difficulty">([.0-9]+)</td>')
-                self.updater("SolidCoin", 'http://solidcoin.whmcr.co.uk/chain/SolidCoin?count=1', 'scc_difficulty', '<td>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}</td><td>\d{1,}</td><td>[.0-9]+</td><td>([.0-9]+)</td>')
+                self.updater("Namecoin", 'http://namecoinpool.com/', 'nmc_difficulty', "Current difficulty:</td><td>([.0-9]+)</td>")
+                self.updater("SolidCoin", 'http://allchains.info', 'scc_difficulty', "<td> sc </td><td align=\'right\'> ([0-9]+)")
                 self.updater("IXcoin", 'http://allchains.info', 'ixc_difficulty', "ixc </td><td align='right'> ([0-9]+) </td><td align='right'>   [.0-9]+ </td>")
                 self.updater("I0coin", 'http://allchains.info', 'i0c_difficulty', "i0c </td><td align='right'> ([0-9]+) </td><td align='right'>   [.0-9]+ </td>")
             eventlet.sleep(60*60*6)

@@ -75,6 +75,20 @@ class dynamicSite():
                             self.bitHopper.log_msg('Expected payout for ' + str(server) + " modified")
                 except Exception, e:
                     self.bitHopper.log_msg('Incorrect http post request for expected payout: ' + str(e))
+            if "wait" in v:
+                try:
+                    server = v.split('-')[1]
+                    info = self.bitHopper.pool.get_entry(server)
+                    old_wait = 0
+                    if 'wait' in info:
+                        old_wait = info['wait']
+                    new_wait = float(request.POST[v])
+                    self.bitHopper.log_msg('Set ' + server + ' wait value from ' + str(old_wait) + ' to ' + str(new_wait))
+                    info['wait'] = new_wait
+                    self.bitHopper.select_best_server()
+                except Exception, e:
+                    self.bitHopper.log_msg('Incorrect http post request wait: ' + str(v))
+                    self.bitHopper.log_msg(e)
             if "penalty" in v:
                 try:
                     server = v.split('-')[1]
@@ -211,6 +225,14 @@ class nullsite():
         start_response('401 UNAUTHORIZED', [('Content-Type', 'text/plain'),('WWW-Authenticate','Basic realm="Protected"')])
         return ['']
 
+class nosite():
+    def __init__(self):
+        self.auth = False
+
+    def handle(self, env, start_response):
+        start_response('200 OK', [])
+        return ['']
+
 class bitSite():
 
     def __init__(self, bitHopper):
@@ -221,7 +243,7 @@ class bitSite():
         self.sites = [self, lpSite(self.bitHopper), dynamicSite(self.bitHopper), dataSite(self.bitHopper)]
 
     def handle_start(self, env, start_response):
-        use_site = self
+        use_site = nosite()
         for site in self.sites:
             if getattr(site, 'auth', True):
                 if not self.auth_check(env):
@@ -235,7 +257,8 @@ class bitSite():
         except Exception, e:
             self.bitHopper.log_msg('Error in a wsgi function')
             self.bitHopper.log_msg(e)
-            #traceback.print_exc()
+            traceback.print_exc()
+            print env['PATH_INFO']
             return [""]
 
     def handle(self, env, start_response):
