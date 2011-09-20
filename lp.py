@@ -46,6 +46,16 @@ class LongPoll():
         hook_end.notify(self, bitHopper)
         eventlet.spawn_n(self.start_lp)
 
+    # return all blocks data (excluding special "_defer" entry)
+    def getBlocks(self):
+        temp = {};
+        for b in self.blocks:
+            temp[b] = {}
+            for v in self.blocks[b]:
+                if v != "_defer":
+                    temp[b][v] = self.blocks[b][v]
+        return temp
+    
     def set_owner(self, server, block = None):
         with self.lock:
             hook_start = plugins.Hook('plugins.lp.set_owner.start')
@@ -60,6 +70,8 @@ class LongPoll():
             if old_owner and self.pool.servers[server]['coin'] != self.pool.servers[old_owner]['coin']:
                 return
             self.blocks[block]["_owner"] = server
+            if server not in self.blocks[block]:
+                self.blocks[block][server] = 0
             if '_defer' in self.blocks[block]:
                 old_defer = self.blocks[block]['_defer']
             else:
@@ -117,6 +129,7 @@ class LongPoll():
             hook_start = plugins.Hook('plugins.lp.add_block.start')
             hook_start.notify(self, block, work, server)
             self.blocks[block]={}
+            self.blocks[block]['_time'] = time.localtime()
             self.bitHopper.lp_callback.new_block(work, server)
             self.blocks[block]["_owner"] = None
             self.lastBlock = block
@@ -129,6 +142,7 @@ class LongPoll():
         if server in self.polled:
             self.polled[server].release()
         self.bitHopper.log_dbg('received lp from: ' + server)
+        self.bitHopper.log_trace('LP: ' + str(body))
         info = self.bitHopper.pool.servers[server]
         if info['role'] in ['mine_nmc', 'disable', 'mine_ixc', 'mine_i0c', 'mine_scc', 'info']:
             return
