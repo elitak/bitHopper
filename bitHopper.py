@@ -37,6 +37,8 @@ import data
 import lp
 import lp_callback
 import plugin
+import api
+import exchange
 
 
 import ConfigParser
@@ -48,9 +50,12 @@ class BitHopper():
         self.options = options
         self.config = config
         self.lp_callback = lp_callback.LP_Callback(self)
-        self.difficulty = diff.Difficulty(self)           
-        self.pool = pool.Pool(self)
-        self.db = database.Database(self)
+        self.difficulty = diff.Difficulty(self)  
+        self.exchange = exchange.Exchange(self)
+        self.pool = None        
+        self.db = database.Database(self)                       
+        self.pool = pool.Pool_Parse(self)
+        self.api = api.API(self) 
         self.pool.setup(self)
         self.work = work.Work(self)
         self.speed = speed.Speed(self)
@@ -122,15 +127,20 @@ class BitHopper():
         return self.pool.get_current()
 
     def select_best_server(self, ):
-        server_name = self.scheduler.select_best_server()
-        if not server_name:
-            self.log_msg('FATAL Error, scheduler did not return any pool!')
-            os._exit(-1)
+        server_list, backup_list = self.scheduler.select_best_server()
 
         old_server = self.pool.get_current()
             
-        if self.pool.get_current() != server_name:
-            self.pool.set_current(server_name)
+        if len(server_list) == 0:
+            server_list = backup_list
+
+        if len(server_list) == 0:
+            self.log_msg('FATAL Error, scheduler did not return any pool!')
+            os._exit(1)
+        server_name = server_list[0]
+
+        if self.pool.get_current() != server_list[0]:
+            self.pool.set_current(server_list[0])
             self.log_msg("Server change to " + str(self.pool.get_current()))
             servers = self.pool.servers
             if servers[server_name]['coin'] != servers[old_server]['coin']:
@@ -178,12 +188,6 @@ def main():
     parser.add_option('--port', type = int, default=8337, help='Port to listen on')
     parser.add_option('--scheduler', type=str, default='DefaultScheduler', help='Select an alternate scheduler')
     parser.add_option('--threshold', type=float, default=None, help='Override difficulty threshold (default 0.43)')
-    parser.add_option('--altslicesize', type=int, default=900, help='Override Default AltSliceScheduler Slice Size of 900')
-    parser.add_option('--altminslicesize', type=int, default=60, help='Override Default Minimum Pool Slice Size of 60 (AltSliceScheduler only)')
-    parser.add_option('--altslicejitter', type=int, default=0, help='Add some random variance to slice size, disabled by default (AltSliceScheduler only)')
-    parser.add_option('--altsliceroundtimebias', action='store_true', default=False, help='Bias slicing slightly by round time duration with respect to round time target (default false)')
-    parser.add_option('--altsliceroundtimetarget', type=int, default=1000, help='Round time target based on GHash/s (default 1000 Ghash/s)')
-    parser.add_option('--altsliceroundtimemagic', type=int, default=10, help='Round time magic number, increase to bias towards round time over shares')
     parser.add_option('--config', type=str, default='bh.cfg', help='Select an alternate main config file from bh.cfg')
     parser.add_option('--p2pLP', action='store_true', default=False, help='Starts up an IRC bot to validate LP based hopping.')
     parser.add_option('--ip', type = str, default='', help='IP to listen on')
@@ -210,12 +214,12 @@ def main():
             application_path = os.path.dirname(__file__)
         if not os.path.exists(os.path.join(application_path, options.config)):
             print "Missing " + options.config + " may need to rename bh.cfg.default"
-            os._exit(-1)        
+            os._exit(1)
         config.read(os.path.join(application_path, options.config))
     except:
         if not os.path.exists(options.config):
             print "Missing " + options.config + " may need to rename bh.cfg.default"
-            os._exit(-1)        
+            os._exit(1)
         config.read(options.config)
     
     bithopper_instance = BitHopper(options, config)

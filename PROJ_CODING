@@ -35,14 +35,14 @@ WSGI server tries to finish closed connections
 
 CGMINER w/ BH unstable                       (https://github.com/c00w/bitHopper/issues/343)
 
+Stats.db bugs                                (https://github.com/c00w/bitHopper/issues/402)
+
 ---------------------------------------------------------------------------------------
 
 Future to-do list:
 
 
 Work based slicing                           (https://github.com/c00w/bitHopper/issues/103)
-
-Be able to force LP mining                   (https://github.com/c00w/bitHopper/issues/178)
 
 Hide Inactive and Old users                  (https://github.com/c00w/bitHopper/issues/214)
 
