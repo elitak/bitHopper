@@ -30,6 +30,8 @@ class Pool():
         self['user_shares'] = self.bitHopper.db.get_shares(self['index_name'])
         self['payout'] = self.bitHopper.db.get_payout(self['index_name'])
         self['expected_payout'] = self.bitHopper.db.get_expected_payout(self['index_name'])
+        self['name'] = attribute_dict.get('name', self[
+'index_name'])
         self['wallet'] = attribute_dict.get('wallet', '')
         self['api_address'] = attribute_dict.get('api_address', self['index_name'])
         self['role'] = attribute_dict.get('role', 'disable')
@@ -65,21 +67,45 @@ class Pool():
         for attr in attribute_dict:
             if attr not in self.dict:
                 self.dict[attr] = attribute_dict[attr]
+
     def __lt__(self, other):
-        if self['role'] in ['backup', 'backup_latehop']:
-            rr_self = float(self['rejects']/(self['user_shares']+1))
+        #Ordering of backup roles
+        role_order = {'backup_latehop':0,'backup':1}
+
+        #If the roles are different use the role_order if it exists
+        if self['role'] != other['role']:
+            if self['role'] in role_order and other['role'] in role_order:
+                return role_order[self['role']] < role_order[other['role']]
+            
+        #backup sorts by reject rate
+        if self['role'] in ['backup']:
+            rr_self = float(self['rejects'])/(self['user_shares']+1)
             rr_self += self.get('penalty', 0.0)
-            rr_other = float(other['rejects']/(other['user_shares']+1))
+            rr_other = float(other['rejects'])/(other['user_shares']+1)
             rr_other += other.get('penalty', 0.0)
-            return rr_self <= rr_other
+            return rr_self < rr_other
+
+        #backup latehop sorts purely by shares
+        if self['role'] in ['backup_latehop']:
+            return self['shares'] < other['shares']
+
+
+        #disabled pools should never end up in a list
         elif other.role in ['disable']:
             return True
+
         elif self['role'] in ['disable']:
             return False
-        else:
-            return self['shares'] < other.shares
 
-    def btc_shares(self,):
+        else:
+            if self['coin'] == other['coin']:
+                return self['shares'] < other['shares']
+            else:
+                self_proff = self.bitHopper.exchange.profitability.get(self['coin'],0)
+                other_proff = self.bitHopper.exchange.profitability.get(other['coin'],0)
+                return self_proff < other_proff
+
+    def btc_shares(self):
         difficulty = self.bitHopper.difficulty.get_difficulty()
         nmc_difficulty = self.bitHopper.difficulty.get_nmc_difficulty()
         ixc_difficulty = self.bitHopper.difficulty.get_ixc_difficulty()
@@ -122,7 +148,12 @@ class Pool():
             return False
         if self['role'] not in ['backup', 'backup_latehop'] and self['api_lag']:
             return False
-        if self.bitHopper.exchange.profitability.get(self['coin'],0) < 1.0:
+
+        try:
+            coin_proff = float(self.config.getboolean('main', 'min_coin_proff'))
+        except:
+            coin_proff = 1.0
+        if self.bitHopper.exchange.profitability.get(self['coin'],0) < coin_proff and self.coin != 'btc':
             return False
         return True
 
