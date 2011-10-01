@@ -33,10 +33,9 @@
 # mine_scc = mina y dificultad solidcoin
 # mine_force = ignora el programador y trabaja solo en esta mina
 #   (no utilices como rol por defecto para mina)
-# backup = viene a minar en esta si no tiene ninguna 
-#   mina Proporcional disponible
-# backup_latehop = prefiere minar en esta como backup si
-#    el numero de shares es muy alto (pag 121, hilo bH oficial)
+# backup = indica bH que esta mina tiene un sistema de recompensas
+#   que puede utilizar para mantener la eficiencia alcanzada
+#   (mira bh.cfg para mas opciones de tipos de backup)
 # mine_charity = hace mineria de caridad en un mina
 #   proporcional que tiene numero de shares muy alto + "mine"
 # info = solo muestra informacion sobre esta mina en stats
@@ -63,8 +62,10 @@
 #  refresh_limit: intervalo para refrescar la api de mina en segundos
 #  user_agent:    identificacion de navegador HTTP de bH para minas, sobrescribe
 #                 el reglaje general que se encuentra en bh.cfg
-#  user:          nombre del trabajador que se tiene que utilizar
+#  user:          nombre del trabajador que se tiene que emplear, utiliza {}
+#                 para que bH trabaje en cuentas de minero distintas ej. usuario_{minerobH}
 #  pass:          contrasena del trabajador (no se necesita para todas las minas)
+#                 usa {} tambien para contrasena del trabajador , ej. contrasena_{passminerobH}
 #  wallet:        se utiliza solo para el plugin "Payouts", rellena una direccion btc para cada mina
 #
 #########################################################################################
