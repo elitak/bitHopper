@@ -3,8 +3,7 @@
 #Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 #Based on a work at github.com.
 
-import json
-import re
+import json, re, logging
 
 import eventlet
 from eventlet.green import time, socket
@@ -17,24 +16,19 @@ class API():
         self.bitHopper = bitHopper
         self.api_lock = {}
         self.pool = self.bitHopper.pool
-        self.api_pull = ['mine', 'info', 'mine_c', 'mine_nmc', 'mine_ixc', 'mine_i0c',  'mine_scc', 'mine_charity', 'mine_lp',  'backup', 'backup_latehop']
+        self.api_pull = ['mine', 'info', 'mine_c', 'mine_charity', 'mine_lp',  'backup', 'backup_latehop']
+        self.api_pull.extend(['mine_' + coin["short_name"] for coin in self.bitHopper.altercoins.itervalues() if coin["short_name"] != 'btc'])
         self.api_disable_sec = 7200
         try:
             self.api_disable_sec = self.bitHopper.config.getint('main', 'api_disable_sec')
         except Exception, e:
-            self.bitHopper.log_dbg("Error getting value for api_disablesec")
-            self.bitHopper.log_dbg(e)
+            logging.debug("Error getting value for api_disablesec")
+            logging.debug(e)
 
     def UpdateShares(self, server, shares):  
 
         #Actual Share Update      
         prev_shares = self.pool.servers[server]['shares']
-
-        diff_btc = self.bitHopper.difficulty.get_difficulty()
-        diff_nmc = self.bitHopper.difficulty.get_nmc_difficulty()
-        diff_scc = self.bitHopper.difficulty.get_scc_difficulty()
-        diff_i0c = self.bitHopper.difficulty.get_i0c_difficulty()
-        diff_ixc = self.bitHopper.difficulty.get_ixc_difficulty()
 
         #Mark it as unlagged
         self.pool.servers[server]['api_lag'] = False       
@@ -59,42 +53,36 @@ class API():
             if self.pool.servers[server]['duration'] > 0:
                 k += '\t' + str('{0:d}min.'.format( (self.pool.servers[server]['duration']/60) ))
         except Exception, e:
-            self.bitHopper.log_dbg("Error formatting")
-            self.bitHopper.log_dbg(e)
+            logging.debug("Error formatting")
+            logging.debug(e)
             k =  str(shares)
 
         #Display output to user when shares change
         if shares != prev_shares:
             if len(server) == 12:
-                self.bitHopper.log_msg(str(server) +":"+ k)
+                logging.info(str(server) +":"+ k)
             elif len(server) <= 3:
-                self.bitHopper.log_msg(str(server) +":\t\t"+ k)
+                logging.info(str(server) +":\t\t"+ k)
             else:
-                self.bitHopper.log_msg(str(server) +":\t"+ k)
+                logging.info(str(server) +":\t"+ k)
 
         #If the shares indicate we found a block tell LP
         coin_type = self.pool.servers[server]['coin']        
-        if coin_type == 'btc' and shares < prev_shares and shares < 0.10 * diff_btc:
-            self.bitHopper.lp.set_owner(server)
-        elif coin_type == 'nmc' and shares < prev_shares and shares < 0.10 * diff_nmc:
-            self.bitHopper.lp.set_owner(server)
-        elif coin_type == 'scc' and shares < prev_shares and shares < 0.10 * diff_scc:
-            self.bitHopper.lp.set_owner(server)
-        elif coin_type == 'ixc' and shares < prev_shares and shares < 0.10 * diff_ixc:
-            self.bitHopper.lp.set_owner(server)
-        elif coin_type == 'i0c' and shares < prev_shares and shares < 0.10 * diff_i0c:
-            self.bitHopper.lp.set_owner(server)
+        for attr_coin in self.bitHopper.altercoins.itervalues():
+            if coin_type == attr_coin['short_name'] and shares < prev_shares and shares < 0.10 * self.bitHopper.difficulty[coin_type]:
+                self.bitHopper.lp.set_owner(server)
+                break
 
         self.pool.servers[server]['shares'] = int(shares)
         self.pool.servers[server]['err_api_count'] = 0
 
         if self.pool.servers[server]['refresh_time'] > self.api_disable_sec and self.pool.servers[server]['role'] not in ['info','backup','backup_latehop']:
-            self.bitHopper.log_msg('Disabled due to unchanging api: ' + server)
+            logging.info('Disabled due to unchanging api: ' + server)
             self.pool.servers[server]['role'] = 'api_disable'
         return update_time
 
     def errsharesResponse(self, error, server_name):
-        self.bitHopper.log_msg(server_name + ' api error:' + str(error))
+        logging.info(server_name + ' api error:' + str(error))
         #traceback.print_exc()
         pool = server_name
         self.pool.servers[pool]['err_api_count'] += 1
@@ -107,7 +95,7 @@ class API():
         return update_time
 
     def selectsharesResponse(self, response, server_name):
-        #self.bitHopper.log_dbg('Calling sharesResponse for '+ args)
+        #logging.debug('Calling sharesResponse for '+ args)
         server = self.pool.servers[server_name]
         old_duration = server['duration']
         if server['role'] not in self.api_pull:
@@ -138,7 +126,7 @@ class API():
             try:
                 info = json.loads(response)
             except ValueError, e:
-                self.bitHopper.log_dbg(str(server_name) + " - unable to extract JSON from response")
+                logging.debug(str(server_name) + " - unable to extract JSON from response")
                 raise e
             for value in server['api_key'].split(','):
                 info = info[value]
@@ -147,7 +135,7 @@ class API():
             try:
                 info = json.loads(response[:response.find('}')+1])
             except ValueError, e:
-                self.bitHopper.log_dbg(str(server_name) + " - unable to extract JSON from response")
+                logging.debug(str(server_name) + " - unable to extract JSON from response")
                 raise e
             for value in server['api_key'].split(','):
                 info = info[value]
@@ -228,16 +216,16 @@ class API():
         #Disable api scraping
         elif server['api_method'] == 'disable':
             info = '0'
-            self.bitHopper.log_msg('Share estimation disabled for: ' + server['name'])
+            logging.info('Share estimation disabled for: ' + server['name'])
         else:
-            self.bitHopper.log_msg('Unrecognized api method: ' + str(server))
+            logging.info('Unrecognized api method: ' + str(server))
 
         if 'api_strip' in server:
                 strip_char = server['api_strip'][1:-1]
                 info = info.replace(strip_char,'')
             
         if info == None:
-            round_shares = int(self.bitHopper.difficulty.get_difficulty())
+            round_shares = int(self.bitHopper.difficulty['btc'])
         else:   
             round_shares = int(info)
                     

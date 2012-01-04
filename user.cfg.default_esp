@@ -59,6 +59,8 @@
 #  c:             esta variable se utiliza en conjunto con el rol "mine_c" y determina
 #                 cuanto tiempo tardan los shares para disminuir su valor en minas con
 #                 puntuacion (mas informacion en la pagina 200, hilo bH del foro principal)
+#  priority:      utiliza este ajuste para cada mina si quieres que bH trabaje segun
+#                 tu preferencia personal de las mismas (0 = prio mas baja, 1 = poco mas alta, etc.)
 #  refresh_limit: intervalo para refrescar la api de mina en segundos
 #  user_agent:    identificacion de navegador HTTP de bH para minas, sobrescribe
 #                 el reglaje general que se encuentra en bh.cfg
@@ -71,268 +73,264 @@
 #########################################################################################
 
 [slush]
-#http://mining.bitcoin.cz/accounts/register/
-#CAMBIA A CONTINUACION
+#http://mining.bitcoin.cz (Puntuacion, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: mine_slush
 penalty: 1
 user: c00w.testhop
 pass: testhop
 
-[ozco]
-#https://ozco.in/register.php
-#CAMBIA A CONTINUACION
-role: mine
-user:c00w.1
-pass:1234
-
-[mtred]
-#https://mtred.com/user/registration.html
-#CAMBIA A CONTINUACION
-role: mine
-mtred_user_apikey:d91c52cfe1609f161f28a1268a2915b8+
-user:scarium
-pass:x 
-
-[btcmonkey]
-#http://bitcoinmonkey.com/
-#CAMBIA A CONTINUACION
-role: mine
-user: dah4k0r.testhop
-pass: x
-
-[btcworld]
-#http://btcworld.de/signup
-#CAMBIA A CONTINUACION
-role: info
-user: testhop
-pass: x
-
-[triple]
-#https://www.triplemining.com/register
-#CAMBIA A CONTINUACION
-role: mine
-user: c00w_test
-pass: x
-
 [bitclockers]
-#http://bitclockers.com/
-#CAMBIA A CONTINUACION
+#http://bitclockers.com (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 bitclockers_user_apikey: 965469e512aa0de5a37b83ccfd5e849e
 user: flargle
 pass: x
 
-[btcserv]
-#http://btcserv.net/
-#CAMBIA A CONTINUACION
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
 [bcpool]
-#http://bitcoinpool.com
-#CAMBIA A CONTINUACION
+#http://bitcoinpool.com (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: c00w_test
 pass: x
 
 [deepbit]
-#https://deepbit.net/
-#CAMBIA A CONTINUACION
+#https://deepbit.net (Prop, PPS)
+#---Modifica despues de esta linea si vas a minar---
 lp_penalty: 0
 role: mine_lp
 user: nombre_minero
 pass: contrasena_minero
 
-[btcg]
-#https://www.btcguild.com/
-#CAMBIA A CONTINUACION (si quieres)
-lp_penalty: 0
-role: info
-btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
-user: c00w_test
-pass: 1234
-
-[itzod]
-# https://pool.itzod.ru
-#CAMBIA A CONTINUACION (si quieres)
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
 [btcmine]
-# https://btcmine.com/user/register/
-#CAMBIA A CONTINUACION (si quieres)
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
-[digbtc]
-#http://www.digbtc.net/register.php
-#CAMBIA A CONTINUACION (si quieres)
+# https://btcmine.com (Puntuacion)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
 [bclc]
-#http://www.bitcoins.lc
-#CAMBIA A CONTINUACION (si quieres)
+#http://www.bitcoins.lc (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: FSkyvM
 pass: xndzEU
 
 [kiwipool]
-#http://www.kiwipool.me/
-#CAMBIA A CONTINUACION (si quieres)
+#http://www.kiwipool.me (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
 [bloodys]
-#http://pool.bloodys.com
-#CAMBIA A CONTINUACION (si quieres)
+#http://pool.bloodys.com (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
 [bithasher]
-#http://bithasher.com/index.php/register/
-#CAMBIA A CONTINUACION (si quieres)
+#http://bithasher.com (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
-
-[bitfarms]
-#http://bitfarms.ca/
-#CAMBIA A CONTINUACION (si quieres)
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
-[p2pool]
-#https://en.bitcoin.it/wiki/P2Pool
-#las contrasenas y el usuario no importan en p2pool
-role: disable
-user: minero
-pass: feliz
-
-[rfc]
-#https://rfcpool.com/signup
-#CAMBIA A CONTINUACION
-role: disable
-user: c00w_test
-pass: x
 
 [asspenny]
-#http://asspennypool.com/register.php
-#CAMBIA A CONTINUACION (si quieres)
+#http://asspennypool.com (Prop, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 asspenny_user_apikey: xxxxxx
 user: nombre_minero
 pass: contrasena_minero
 
 [guildminers]
-#http://guildminers.com/
-#CAMBIA A CONTINUACION
+#http://guildminers.com (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
-
-[yourbtc]
-#http://yourbtc.net
-#CAMBIA A CONTINUACION
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
-[bitpenny]
-#http://www.bitpenny.com/
-#CAMBIA A CONTINUACION
-role: info
-user: (una direccion bitcoin)
-pass: pass
 
 [coinotron]
-#http://coinotron.com
-#CAMBIA A CONTINUACION
+#http://coinotron.com (Puntuacion)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
-######################################
-# Minas de respaldo (backup) para
-# cuando no tienes ninguna mina
-# proporcional disponible.
-# (puede ser cualquier mina con medidas
-# anti-hopping, las minas PPS tienen
-# la menor variancia desde luego.
-######################################
+[simplecoin]
+#http://simplecoin.us (Prop, SMPPS, PPLNS, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: nombre_minero
+pass: contrasena_minero
+
+[nmcbitbtc]
+#http://nmcbit.com/ (Prop, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: nombre_minero
+pass: contrasena_minero
+
+#######################################
+ Minas de respaldo, que ayudan mantener
+ la eficiencia, para cuando no hay
+ ninguna mina Prop. disponible
+#######################################
 
 [eligius]
-#http://eligius.st/wiki/index.php/Getting_Started
-#CAMBIA A CONTINUACION
+#http://eligius.st (SMPPS, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: backup
 user: 1AofHmwVef5QkamCW6KqiD4cRqEcq5U7hZ
 pass: x
 #las contrasenas no importan en Eligius
 
 [arsbitcoin]
-#https://arsbitcoin.com/register.php
-#CAMBIA A CONTINUACION
+#https://arsbitcoin.com (PPS)
+#---Modifica despues de esta linea si vas a minar---
 role: backup
 user: c00w.default
 pass: fire
 
-[bitp]
-#http://bitp.it
-#CAMBIA A CONTINUACION
-role: backup
-bitp_user_apikey: 80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
-user: 4bjibc3R1RGF9
-pass: u5cpmndZq4Jvp
-
 [ninjac]
-#https://www.ninjacoin.com/index.php
-#CAMBIA A CONTINUACION
+#https://www.ninjacoin.com (PPS)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: paraipanakos.works
 pass: minero
 
 [abc]
-#http://www.abcpool.co/
-#CAMBIA A CONTINUACION
+#http://www.abcpool.co (PPS)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 abc_user_apikey: 
 user: nombre_minero
 pass: contrasena_minero
 
-[mtredpps]
-#https://mtred.com/user/registration.html
-#CAMBIA A CONTINUACION
+[mtred]
+#https://mtred.com (PPS, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
-mtred_user_apikey:d91c52cfe1609f161f28a1268a2915b8+
 user:scarium
 pass:x
 
 [nofeemining]
-#https://www.nofeemining.com/ 
-#CAMBIA A CONTINUACION
-role: info
+#https://nofeemining.appspot.com (RSMPPS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
 nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
 user: 1Q4B1LdoKHtMbj6tBLhj1cyuMWTDYFJ9Y7
 pass: x
 
-[btcservpps]
-#http://btcserv.net/
-#CAMBIA A CONTINUACION
+[itzod]
+# https://pool.itzod.ru (SMPPS)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: nombre_minero
+pass: contrasena_minero
+
+[btcserv]
+#http://btcserv.net (PPS)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: nombre_minero
 pass: contrasena_minero
 
-[btcgpps]
-#http://pps.btcguild.com/register.php
-#CAMBIA A CONTINUACION
+[btcg]
+#https://www.btcguild.com (PPS)
+#---Modifica despues de esta linea si vas a minar---
+lp_penalty: 0
+role: info
+btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
+user: c00w_test
+pass: 1234
+
+[bitpenny]
+#http://www.bitpenny.com (PPS)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: (una direccion bitcoin)
+pass: pass
+
+[polmine]
+#https://polmine.pl (PPS)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
+user: c00w1456testhop
+pass: x
+
+[bitparking]
+#http://mmpool.bitparking.com (PPS)
+#---Modifica despues de esta linea si vas a minar---
+role: backup
+user: nombre_minero
+#las contrasenas no importan en bitparking
+pass: contrasena_minero
+
+################################
+ Minas que usan PPLNS, DGM u
+ otro sistema de pago visto como
+ mas justo por admins y mineros
+################################
+
+[eclipsemc]
+#https://eclipsemc.com (DGM)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
+user: c00w_worker
+pass: x
+
+[masterpool]
+#https://masterpool.eu (PPLNS, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: nombre_minero
+pass: contrasena_minero
+
+[mineco]
+#https://mineco.in (PPLNS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: c00w.test
+pass: x
+
+[mkalinin]
+#http://pool.mkalinin.ru (PPLNS)
+#---Modifica despues de esta linea si vas a minar---
+role: info
+user: your_username
+pass: your_password
+
+[ozco]
+#https://ozco.in (DGM)
+#---Modifica despues de esta linea si vas a minar---
+role: mine
+user:c00w.1
+pass:1234
+
+[p2pool]
+#https://en.bitcoin.it/wiki/P2Pool (PPLNS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: minero
+#las contrasenas y el usuario no importan en p2pool
+pass: feliz
+
+[triple]
+#https://www.triplemining.com (PPLNS)
+#---Modifica despues de esta linea si vas a minar---
+role: mine
+user: c00w_test
+pass: x
+
+[yourbtc]
+#http://yourbtc.net (DGM)
+#---Modifica despues de esta linea si vas a minar---
+role: info
 user: nombre_minero
 pass: contrasena_minero
 
@@ -341,104 +339,52 @@ pass: contrasena_minero
 # usando el modo adecuado (mine_xxx)
 ######################################
 
+
 #Minas nmc
 
-[bitparking]
-#http://bitparking.com/
-#CAMBIA A CONTINUACION (si quieres)
-role: info
-# el nombre de minero es la direccion de pago
-user: NJERCMdHz8gEBmdr9pkfUZ2LQuJr17gnFZ
-#las contrasenas no importan en BitParking
-pass: x
-
 [nmcbit]
-#http://nmcbit.com/
-#CAMBIA A CONTINUACION (si quieres)
-role: info
-user: nombre_minero
-pass: contrasena_minero
-
-[masterpool]
-#https://masterpool.eu/signup
-#CAMBIA A CONTINUACION (si quieres)
+#http://nmcbit.com (PPS, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
 [namebit]
-#http://www.namebit.org/
-#CAMBIA A CONTINUACION (si quieres)
+#http://www.namebit.org (Prop)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 #user is namecoin address
 user: nmcaddress
 #pasword must be "none"
 pass: none
 
-[bitchomp]
-#http://www.bitchomp.info/ncp/register.php
-#CAMBIA A CONTINUACION (si quieres)
+[masterpoolnmc]
+#https://masterpool.eu (Prop, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
 role: info
 user: nombre_minero
 pass: contrasena_minero
 
-
-#Minas i0c
-
-[i0g]
-#http://i0.btcguild.com/register.php
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
-[i0parking]
-#http://i0pool.bitparking.com/pool
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
-[digi0c]
-#http://i0.digbtc.net/
-role: disable
+[mtrednmc]
+#https://mtred.com (Prop, mineria unida NMC)
+#---Modifica despues de esta linea si vas a minar---
+role: info
 user: nombre_minero
 pass: contrasena_minero
 
 
 #Minas scc
 
-[scguild]
-#http://sc.btcguild.com/
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
-[sodigbtc]
-#http://sobtc.digbtc.net
-#http://sc.digbtc.net
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
-[scbitparking]
-#http://scpool.bitparking.com
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
 [squid]
 #http://pool.squidnet.org
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: nombre_minero
 pass: contrasena_minero
 
 [mine4us]
 #http://solid.mine-for.us
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: nombre_minero
 pass: contrasena_minero
@@ -446,16 +392,9 @@ pass: contrasena_minero
 
 #Minas ixc
 
-[ixparking]
-#http://ixpool.bitparking.com/pool
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: nombre_minero
-pass: contrasena_minero
-
 [digixc]
 #http://ix.digbtc.net
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: nombre_minero
 pass: contrasena_minero
@@ -467,16 +406,116 @@ pass: contrasena_minero
 # saltarlas a tu riesgo.
 ######################################
 
+[btcworld]
+#http://btcworld.de (Prop)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: testhop
+pass: x
+
+[rfc]
+#https://rfcpool.com (PPLNS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: c00w_test
+pass: x
+
+[bitfarms]
+#http://bitfarms.ca (PPS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[bitp]
+#http://bitp.it (ESMPPS)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+bitp_user_apikey: 80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
+user: 4bjibc3R1RGF9
+pass: u5cpmndZq4Jvp
+
+[digbtc]
+#http://www.digbtc.net (Prop)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[ixparking]
+#http://ixpool.bitparking.com/pool
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[scguild]
+#http://sc.btcguild.com/
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[sodigbtc]
+#http://sobtc.digbtc.net
+#http://sc.digbtc.net
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[scbitparking]
+#http://scpool.bitparking.com
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[i0g]
+#http://i0.btcguild.com/register.php
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[i0parking]
+#http://i0pool.bitparking.com/pool
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[digi0c]
+#http://i0.digbtc.net
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: nombre_minero
+pass: contrasena_minero
+
+[bitchomp]
+#http://www.bitchomp.info (SMPPS, mineria unida BTC)
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: su_nombre_de_usuario.cualquier_cosa o direccion_BTC.direccion_NMC
+pass: cualquiera
+
+[btcmonkey]
+#http://bitcoinmonkey.com/
+#---Modifica despues de esta linea si vas a minar---
+role: disable
+user: dah4k0r.testhop
+pass: x
+
 [unitedminers]
 #http://www.unitedminers.com
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: dah4k0r@gmail.com_testhop
 pass: testhop
 
 [swepool]
 #http://swepool.net/profile
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 swepool_user_apikey: xxxxxx
 user: nombre_minero
@@ -484,66 +523,43 @@ pass: contrasena_minero
 
 [bmunion]
 #http://www.bitminersunion.org/
-#CAMBIA A CONTINUACION
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: nombre_minero
 pass: contrasena_minero
 
-[polmine]
-#https://polmine.pl
-#CAMBIA A CONTINUACION
-role: disable
-user: c00w1456testhop
-pass: x
-
 [oldpolmine]
 # El metodo antiguo para conseguir los stats
 #https://polmine.pl
-#CHANGE THIS
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: c00w1456testhop
 pass: x
 
 [btcpool24]
 #http://www.btcpool24.com
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: Sukrim.hopper
 pass: 1234
 
 [poolmunity]
 #http://poolmunity.com/
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: c00w.testhop
 pass: testhop
 
 [x8s]
 #http://btc.x8s.de/
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: testhop
 pass: x 
 
-[mineco]
-#https://mineco.in
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-user: c00w.test
-pass: x
-
-[eclipsemc]
-#https://eclipsemc.com
-#CAMBIA A CONTINUACION (si quieres)
-role: disable
-eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
-user: c00w_worker
-pass: x
-
 [mmf]
 #http://mining.mainframe.nl
-#CAMBIA A CONTINUACION (si quieres)
+#---Modifica despues de esta linea si vas a minar---
 role: disable
 user: c00w.1
 pass: x
-

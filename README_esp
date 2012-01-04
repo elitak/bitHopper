@@ -25,10 +25,26 @@ sudo easy_install importlib
 Si quieres hacer funcionar el minero poclbm incluido instala lo siguiente
 sudo easy_install numpy
 
+Y despues baja e instala bitHopper
+
 Probado y funciona en Ubuntu 11.04, 10.10 y 10.04 LTS
 
 
+#Instalacion en Archlinux
+
+pacman -Sy python2-pip mercurial
+pip2 install eventlet
+hg clone https://bitbucket.org/ambroff/greenlet
+cd greenlet
+python2 setup.py install
+
+Y despues baja e instala bitHopper
+
+Es un poco raro pero la version de greenlet que se baja pip causa errores de segmentacion en
+archlinux. Asi que tendras que instalarlo desde el repositorio oficial de bitbucket.
+
 # Instrucciones para usuarios Windows
+NOTA: SI TIENES MUCHOS MINEROS MEJOR UTILIZA LINUX.
 
 ActiveState Python(recomendado, usa version 32 bit aunque tengas un sistema de 64 bit, funcionara igual)
 http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi
@@ -76,6 +92,11 @@ Por si no quieres utilizar alguna mina puedes borrarla de "user.cfg" o ir en la 
 su rol a "disable". BitHopper escucha conexiones en la interfaz de loopback asi que debes redireccionar
 tu minero a localhost:8337 con cualquier usuario y contrasena (ne dejes en blanco).
 
+Si quieres tener ajustes personalizados para algunas minas puedes comprobar el archivo "pools.cfg" para
+ejemplos y luego pon tus ajustes en un archivo llamado "pools-custom.cfg". De este modo siempre vas a tener
+el archivo "pools.cfg" actualizado y podras experimentar anadiendo nuevas minas o api para actualizar shares.
+
+
 # Ajustes LP / panel de control
 
 Panel de control LP: http://localhost:8337/lpworkbench
@@ -118,7 +139,6 @@ cada mina disponible. No muy efficiente pero depurado a maximo y estable.
 Intenta un cambiar de un modo mas agresivo cuendo se llega a los limites preestablecidos (threshold).
 Puedes encontrar algunos parametros especificos para ajustar en el archivo "bh.cfg.default_esp".
 
-
    RoundTimeScheduler
 
 En desuso actualmente.
@@ -152,7 +172,7 @@ o tener la mina "Donation" activada en la pagina de Stats (ajusta el porcentaje 
  17wp2zfxZKeycWt6NKiueVYmYyrciiuq2t - ryouiki
  1CWjg4soWEAQjMD4dCchdPpJ6fWDBRUU5b - echiu64
  15iS8iDqVCM2MF5ndaS3exR7Kw4LxFf2ra - hawks5999
- 1QEBu4Tr7Qe6BMHdpeTmNDTPJhMqpDDtQ3 - paraipanakos
+ 1ParaWy6NELDpseL6b1xbKvyhy5eX8f3TW - paraipan
  13hP5QuFccLUZQDNxPwnfmn6q5RiV48TEn - macboy80
  1GgorPurRdDgsbPmoGEJm2WWGxKkJ8ktkf - sdogi
 
@@ -160,5 +180,5 @@ o tener la mina "Donation" activada en la pagina de Stats (ajusta el porcentaje 
 
  flower1024, echiu64 (ed64), graphiclunarkid, elitak, Clipseza, littleant, bb-btc, gnaget, murfshake, Sukrim, gtrrkicw,
  swordv2, bitcoindaddy, rkozola, ryouiki, starlightbreaker, hawks5999, erasmo, pueytan, macboy80, sdogi, joulesbeef,
- Seoulboy1, paraipanakos, Swicher, lucita777, TenthReality, dfc (Douglas Calvert), dadittoz, cutnpaster
-
+ Seoulboy1, paraipan, Swicher, lucita777, TenthReality, dfc (Douglas Calvert), dadittoz, cutnpaster, simonk83, xzion,
+ HolodeckJizzmopper, MartyChubbs, iongchun

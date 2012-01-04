@@ -20,8 +20,8 @@ go into a seperate .py file. This makes it easier to work with multiple plugins.
 WHY DOES POOL.PY DO EVERYTHING?
 Because I haven't had time to split it and clean it up.
 
-bH could support scraping after logging in with mechanize (http://wwwsearch.sourceforge.net/mechanize/)
-Small script example included
+bH could support scraping after logging in with mechanize. Small script example included
+(http://wwwsearch.sourceforge.net/mechanize/)
 
 ---------------------------------------------------------------------------------------
 
@@ -30,27 +30,22 @@ Bug-issues list:
 
 ajax updates move scroll                     (https://github.com/c00w/bitHopper/issues/69)
 
-WSGI server tries to finish closed connections
+UPSTREAM: WSGI server tries to finish closed connections
                                              (https://github.com/c00w/bitHopper/issues/262)
 
-CGMINER w/ BH unstable                       (https://github.com/c00w/bitHopper/issues/343)
+UPSTREAM: CGMINER w/ Multiple Coins Crashes  (https://github.com/c00w/bitHopper/issues/343)
 
-No JSON object could be decoded              (https://github.com/c00w/bitHopper/issues/403)
+LP Workbench data not displaying             (https://github.com/c00w/bitHopper/issues/493)
 
-Blank stats page with latest v0.2.5.2-45-gd7bdc98
-                                             (https://github.com/c00w/bitHopper/issues/407)
+Can't get {user} to work - user: in user.cfg (https://github.com/c00w/bitHopper/issues/502)
 
-Check if p2pool works                        (https://github.com/c00w/bitHopper/issues/419)
+bitHopper stalled                            (https://github.com/c00w/bitHopper/issues/535)
+
+nmcbit.com duration calculation bad          (https://github.com/c00w/bitHopper/issues/539)
 ---------------------------------------------------------------------------------------
 
 Future to-do list:
 
-
-Dump LP Calls and blocks to file             (https://github.com/c00w/bitHopper/issues/244)
-
-Sum of total recieved and expected           (https://github.com/c00w/bitHopper/issues/347)
-
-Fancy Logging Plugin                         (https://github.com/c00w/bitHopper/issues/351)
 
 Autoupdate pools.cfg                         (https://github.com/c00w/bitHopper/issues/361)
 
@@ -65,4 +60,6 @@ Store the duration in the db                 (https://github.com/c00w/bitHopper/
 
 Display Time since last LP on /stats# page next to round duration
                                              (https://github.com/c00w/bitHopper/issues/422)
+
+Add role: mine_fhop                          (https://github.com/c00w/bitHopper/issues/431)
 

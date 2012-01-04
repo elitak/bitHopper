@@ -25,10 +25,26 @@ sudo easy_install importlib
 If you would like to use the poclbm miner plugin do
 sudo easy_install numpy
 
+Then download and run bitHopper
+
 Tested and working in Ubuntu 11.04, 10.10 and 10.04 LTS
 
 
+#Archlinux installation
+
+pacman -Sy python2-pip mercurial
+pip2 install eventlet
+hg clone https://bitbucket.org/ambroff/greenlet
+cd greenlet
+python2 setup.py install
+
+Then download and run bitHopper
+
+I know its weird but the pip version of greenlet causes segfaults in 
+archlinux. So you have to install from the oficial repo on bitbucket.
+
 # Instructions for Windows users
+NOTE: IF YOU ARE RUNNING LOTS OF MINERS USE LINUX.
 
 ActiveState Python(recommended, use 32 bit even when you have 64 bit system)
 http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi
@@ -74,6 +90,11 @@ If any of the pools turns red or there is something else missing then edit your 
 If you don't want to use a pool delete it from "user.cfg" or go to Stats page and switch its role to
 disable. BitHopper listens on loopback interface so you should direct your miner to localhost:8337
 with any username and password (not blank).
+
+If you would like to use custom settings with some pools check out "pools.cfg" for examples and then
+put your settings into "pools-custom.cfg". This way you can always update to latest "pools.cfg"
+and also experiment with new pools or use different api sources for shares scraping.
+
 
 # LP tuning / dashboard
 
@@ -151,7 +172,7 @@ or have "Donation" pool enabled in your stats page (setup donation percent in yo
  17wp2zfxZKeycWt6NKiueVYmYyrciiuq2t - ryouiki
  1CWjg4soWEAQjMD4dCchdPpJ6fWDBRUU5b - echiu64
  15iS8iDqVCM2MF5ndaS3exR7Kw4LxFf2ra - hawks5999
- 1QEBu4Tr7Qe6BMHdpeTmNDTPJhMqpDDtQ3 - paraipanakos
+ 1ParaWy6NELDpseL6b1xbKvyhy5eX8f3TW - paraipan
  13hP5QuFccLUZQDNxPwnfmn6q5RiV48TEn - macboy80
  1GgorPurRdDgsbPmoGEJm2WWGxKkJ8ktkf - sdogi
 
@@ -159,5 +180,6 @@ or have "Donation" pool enabled in your stats page (setup donation percent in yo
 
  flower1024, echiu64 (ed64), graphiclunarkid, elitak, Clipseza, littleant, bb-btc, gnaget, murfshake, Sukrim, gtrrkicw,
  swordv2, bitcoindaddy, rkozola, ryouiki, starlightbreaker, hawks5999, erasmo, pueytan, macboy80, sdogi, joulesbeef,
- Seoulboy1, paraipanakos, Swicher, lucita777, TenthReality, dfc (Douglas Calvert), dadittoz, cutnpaster
+ Seoulboy1, paraipan, Swicher, lucita777, TenthReality, dfc (Douglas Calvert), dadittoz, cutnpaster, simonk83, xzion,
+ HolodeckJizzmopper, MartyChubbs, iongchun
 

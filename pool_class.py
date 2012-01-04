@@ -4,7 +4,7 @@
 # Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 #Based on a work at github.com.
 
-import time
+import time, logging
 
 class Pool():
     def __init__(self, name, attribute_dict, bitHopper):
@@ -13,7 +13,7 @@ class Pool():
         self._parse(attribute_dict)
 
     def _parse(self, attribute_dict):
-        self['shares'] = int(self.bitHopper.difficulty.get_difficulty())
+        self['shares'] = int(self.bitHopper.difficulty['btc'])
         self['ghash'] = -1
         self['duration'] = -2
         self['duration_temporal'] = 0
@@ -45,20 +45,17 @@ class Pool():
         if self['default_role'] in ['info','disable']:
             self['default_role'] = 'mine'
 
+        #Pools are now grouped by priority
+        self['priority'] = int(attribute_dict.get('priority', 0))
+
         #Coin Handling
+        coin_roles = {'mine': 'btc', 'info': 'btc', 'backup': 'btc', 'backup_latehop': 'btc', 'mine_charity': 'btc', 'mine_c':'btc', 'mine_force':'btc'}
+        for coin in self.bitHopper.altercoins.itervalues():
+            if coin['short_name'] != 'btc':
+                coin_roles[coin['short_name']] = 'mine_' + coin['short_name']
         if 'coin' not in attribute_dict:
-            if self['role'] in ['mine', 'info', 'backup', 'backup_latehop', 'mine_charity', 'mine_c']:
-                coin_type = 'btc'
-            elif self['role'] in ['mine_nmc']:
-                coin_type = 'nmc'
-            elif self['role'] in ['mine_ixc']:
-                coin_type = 'ixc'
-            elif self['role'] in ['mine_i0c']:
-                coin_type = 'i0c'
-            elif self['role'] in ['mine_scc']:
-                coin_type = 'scc'   
-            else:
-                coin_type = 'btc'
+            try: coin_type = coin_roles[self['role']]
+            except KeyError: coin_type = 'btc'
             self['coin'] = coin_type
         else:
             self['coin'] = attribute_dict['coin']
@@ -80,9 +77,9 @@ class Pool():
         #backup sorts by reject rate
         if self['role'] in ['backup']:
             rr_self = float(self['rejects'])/(self['user_shares']+1)
-            rr_self += self.get('penalty', 0.0)
+            rr_self += float(self.get('penalty', 0.0)) / 100
             rr_other = float(other['rejects'])/(other['user_shares']+1)
-            rr_other += other.get('penalty', 0.0)
+            rr_other += float(other.get('penalty', 0.0)) / 100
             return rr_self < rr_other
 
         #backup latehop sorts purely by shares
@@ -91,7 +88,7 @@ class Pool():
 
 
         #disabled pools should never end up in a list
-        elif other.role in ['disable']:
+        elif other['role'] in ['disable']:
             return True
 
         elif self['role'] in ['disable']:
@@ -106,24 +103,14 @@ class Pool():
                 return self_proff < other_proff
 
     def btc_shares(self):
-        difficulty = self.bitHopper.difficulty.get_difficulty()
-        nmc_difficulty = self.bitHopper.difficulty.get_nmc_difficulty()
-        ixc_difficulty = self.bitHopper.difficulty.get_ixc_difficulty()
-        i0c_difficulty = self.bitHopper.difficulty.get_i0c_difficulty()
-        scc_difficulty = self.bitHopper.difficulty.get_scc_difficulty()
+        coin_diffs = {}
+        for attr_coin in self.bitHopper.altercoins.itervalues():
+            coin_diffs[attr_coin['short_name']] = self.bitHopper.difficulty[attr_coin['short_name']]
         
         if self['coin'] in ['btc']:
             shares = self['shares']
-        elif self['coin'] in ['nmc']:
-            shares = self['shares']*difficulty / nmc_difficulty
-        elif self['coin'] in ['ixc']:
-            shares = self['shares']*difficulty / ixc_difficulty
-        elif self['coin'] in ['i0c']:
-            shares = self['shares']*difficulty / i0c_difficulty
-        elif self['coin'] in ['scc']:
-            shares = self['shares']*difficulty / scc_difficulty
-        else:
-            shares = difficulty
+        try: shares = self['shares'] * coin_diffs['btc'] / coin_diffs[self['coin']]
+        except KeyError: shares = coin_diffs['btc']
 
         if self['role'] == 'mine_c':
             #Checks if shares are to high and if so sends it through the roof
@@ -133,12 +120,13 @@ class Pool():
             except:
                 c = 300
             hashrate = float(self['ghash'])
-            hopoff = difficulty * (0.435 - 503131./(1173666 + c*hashrate))
+            hopoff = coin_diffs['btc'] * (0.0164293 + 1.14254 / (1.8747 * (coin_diffs['btc'] / (c * hashrate)) + 2.71828))
             if shares > hopoff:
-                shares = 2*difficulty
+                shares = 2*coin_diffs['btc']
 
         if self['role'] in ['mine_force', 'mine_lp_force']:
             shares = 0
+
         # apply penalty
         shares = shares * float(self.get('penalty', 1))
         return shares, self

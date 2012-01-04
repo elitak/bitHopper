@@ -1,5 +1,101 @@
 
 
+#Ver   0.2.6.5 (605e585)
+Added unittest framework and actually wrote some tests
+Updated lpbot to not do manual patching of irclib
+Docstring cleanup and blockexplorer fix
+Fixed a bug in lp caling trace
+Fix some lingering bugs from logging updates
+Fixed kiwipool's api address
+More bugfixes
+Added TODO
+
+
+#Ver   0.2.6.4 (a8943a0)
+Updated poolblocks again
+Fixed rpcworklog
+More logging fixes
+
+
+#Ver   0.2.6.3 (9bacc69)
+Update apiangel and payouts to be more beautiful
+New logging methond implemented and customized modules to use it
+Speed is decoupled from bitHopper
+Fix coinotron api_method
+Update donation address to use btcproxy.net
+Upd polmine info + cfg
+Upd rfc pool info + cfg
+Update PROJ_CODING, CHANGELOG
+Updated pool info
+
+
+#Ver   0.2.6.2 (a03b1e1)
+Fix "mine_c" for diff. changes 
+Fixed abcpool hashrate
+Minor code corrections
+New mining address for yourbtc.net
+Added gputech to known pools
+Update pools info
+
+
+#Ver   0.2.6.1 (5bbad43)
+Fixed a bug with mine_lp_force which was causing it to not work
+Added Round Time for various pools
+Added Mkalinin.ru
+Added windows warning to README
+Added archlinux installation instructions
+Removed btcgpps - obsolete + upd info
+Fix coinotron api
+Update pools info
+
+
+#Ver   0.2.6 (9fab596)
+Update default cfg to have lpworkbench disabled by def.
+Fixed database thread. Thread didn't get started
+
+
+#Ver 0.2.5.7 (326918f)
+Display hash rate for kiwipool
+Added NMCBit Proportional BTC
+Added hash rate display for a few pools
+Update user.cfg.default en/esp
+Some optimizations
+Small bug fixes
+Update pools info
+
+
+#Ver 0.2.5.6 (ab5b2f1)
+Coin Profit based mining is disabled by default
+New way to update the difficulty from various sites
+Totals for shares submitted to pools, payouts, expected payouts and eff
+Set lpbot to be disabled by default
+Added lpdump and updated the config files
+Upd bh.cfg + descr
+Updated Mt.Red's API Address and Keys
+Display hash rate for lots of pools
+Moved btcg to backup pools
+Change to backup donation pool
+Added GeistGeld coin
+Added priority for pools
+Update pools info
+Upd PROJ_COODING
+
+
+#Ver 0.2.5.5 (6900c30)
+Trigger a LP when we change block owners due to new api info
+Fix for early and latehop backup methods
+Removed backup_latehop from user.cfg.def + rewrote backup descr
+New options to bh.cfg.def + small changes
+Reorg user.cfg.def pools
+Tagged merged mining pools in info & cfg
+Added pools-custom.cfg
+README updates
+Alternate to pident
+Added Simplecoin.us
+Update pools info
+Lots of bugfixes (main & plugins)
+
+
 #Ver 0.2.5.4 (fb7fbe0)
 Stop errors from happening on startup when the table doesn't exist
 AltSliceScheduler options to config and minor poolblock fix
@@ -18,6 +114,7 @@ Updated proj_coding
 Updated pools info
 Updated changelog
 
+
 #Ver 0.2.5.3 (0c97cf2)
 Backup pools can now be sliced diced and sorted a variety of ways
 Old users are now dropped from the website
@@ -28,6 +125,7 @@ Fixed an output bug with rfc
 Added Payouts jsonrpc plugin
 Updated the pool dictonary to be an array of pool_class objects
 Fixes to payouts jsonrpc plugin
+
 
 #Ver 0.2.5.2 (34fe254)
 Made scheduler return an array of valid servers and valid backup servers 

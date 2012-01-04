@@ -26,8 +26,11 @@ backup_type = rejectrate
 # Minimum coin profitability
 min_coin_proff = 1.0
 
+# Indicates if the program would mine the coins more profitable or if only mine based on the number of shares of each pool.
+calculate_profit = False
+
 # Time limit after which we no longer display workers on the stats page
-user_drop_time = 60*60
+user_drop_time = 3600
 
 # Connection timeout for work requests
 work_request_timeout = 2.5
@@ -89,12 +92,13 @@ roundtimemagic = 10
 mode = manual
 
 [plugins]
-test = True
+test = False
 backdoor = False
 apiangel = True
 poclbm = False
-lpbot = True
+lpbot = False
 payouts = False
+lpdump = False
 
 # set "rpcworklog" to False to disable RPC work logging
 rpcworklog = True
@@ -103,7 +107,7 @@ rpcworklog = True
 # shows lp_owner, verified owner, block timings per block
 # shows lp_penalty summary below
 # Need blockaccuracy to be true in order to show verified information
-lpworkbench = True
+lpworkbench = False
 
 # store list of verified blocks from each pool (scraped via API/html)
 # see "poolblock.cfg" for more information
@@ -151,7 +155,7 @@ refreshRandomJitter = 120
 execpoolsize = 8
 
 # use_ratelimit = True - enable rate limiting for fetch block information
-use_ratelimit = False
+use_ratelimit = True
 
 # ratelimit = int (kb/s) for fetch blocks from pools and blockexplorer (except mmf/btcmp)
 # use a value 80% of the target, e.g. for 100kb/s try 80kb/s, especially for
@@ -167,3 +171,7 @@ timeout = 30
 [plugins.blockaccuracy]
 # report interval for new verified blocks by poolblocks plugin (default 600 seconds)
 reportInterval = 600
+
+[plugins.lpdump]
+# dumps to a file LP results you see on the lpworkbench
+file=lpdump.out

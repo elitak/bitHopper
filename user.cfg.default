@@ -59,6 +59,8 @@
 #  c:             this variable is used together with "mine_c" role and
 #                 determines how long it takes shares to decay in value on
 #                 score pools (more info on page 200, bH thread in main forum)
+#  priority:      use this setting for every pool if you want bH mine by your
+#                 personal preference of them (0 = lowest prio, 1 = higher, etc.)
 #  refresh_limit: pool's api refreshing interval in seconds
 #  user_agent:    HTTP User-Agent header to set when retrieving pool stats
 #                 Overrides the default in bh.cfg
@@ -71,268 +73,265 @@
 ###############################################################################
 
 [slush]
-#http://mining.bitcoin.cz/accounts/register/
-#CHANGE THIS
-role: mine_slush
+#http://mining.bitcoin.cz (Score, merged mining NMC)
+#---Edit after this line if mined---
+role: mine_c
+c: 300
 penalty: 1
 user: c00w.testhop
 pass: testhop
 
-[ozco]
-#https://ozco.in/register.php
-#CHANGE THIS
-role: mine
-user:c00w.1
-pass:1234
-
-[mtred]
-#https://mtred.com/user/registration.html
-#CHANGE THIS
-role: mine
-mtred_user_apikey:d91c52cfe1609f161f28a1268a2915b8+
-user:scarium
-pass:x 
-
-[btcmonkey]
-#http://bitcoinmonkey.com/
-#CHANGE THIS
-role: mine
-user: dah4k0r.testhop
-pass: x
-
-[btcworld]
-#http://btcworld.de/signup
-#CHANGE THIS
-role: info
-user: testhop
-pass: x
-
-[triple]
-#https://www.triplemining.com/register
-#CHANGE THIS
-role: mine
-user: c00w_test
-pass: x
-
 [bitclockers]
-#http://bitclockers.com/
-#CHANGE THIS
+#http://bitclockers.com (Prop)
+#---Edit after this line if mined---
 role: info
 bitclockers_user_apikey: 965469e512aa0de5a37b83ccfd5e849e
 user: flargle
 pass: x
 
-[btcserv]
-#http://btcserv.net/
-#CHANGE THIS
-role: info
-user: your_username
-pass: your_password
-
 [bcpool]
-#http://bitcoinpool.com
-#CHANGE THIS
+#http://bitcoinpool.com (Prop)
+#---Edit after this line if mined---
 role: info
 user: c00w_test
 pass: x
 
 [deepbit]
-#https://deepbit.net/
-#CHANGE THIS
+#https://deepbit.net (Prop, PPS)
+#---Edit after this line if mined---
 lp_penalty: 0
 role: mine_lp
 user: your_username
 pass: your_password
 
-[btcg]
-#https://www.btcguild.com/
-#CHANGE THIS (if you want)
-lp_penalty: 0
-role: info
-btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
-user: c00w_test
-pass: 1234
-
-[itzod]
-# https://pool.itzod.ru
-#CHANGE THIS (if you want)
-role: info
-user: your_username
-pass: your_password
-
 [btcmine]
-# https://btcmine.com/user/register/
-#CHANGE THIS (if you want)
-role: info
-user: your_username
-pass: your_password
-
-[digbtc]
-#http://www.digbtc.net/register.php
-#CHANGE THIS (if you want)
+# https://btcmine.com (Score)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
 [bclc]
-#http://www.bitcoins.lc
-#CHANGE THIS (if you want)
+#http://www.bitcoins.lc (Prop)
+#---Edit after this line if mined---
 role: info
 user: FSkyvM
 pass: xndzEU
 
 [kiwipool]
-#http://www.kiwipool.me/
-#CHANGE THIS (if you want)
+#http://www.kiwipool.me (Prop)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
 [bloodys]
-#http://pool.bloodys.com
-#CHANGE THIS (if you want)
+#http://pool.bloodys.com (Prop)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
 [bithasher]
-#http://bithasher.com/index.php/register/
-#CHANGE THIS (if you want)
+#http://bithasher.com (Prop)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
-
-[bitfarms]
-#http://bitfarms.ca/
-#CHANGE THIS (if you want)
-role: info
-user: your_username
-pass: your_password
-
-[p2pool]
-#https://en.bitcoin.it/wiki/P2Pool
-#password and user can be anything p2pool
-role: disable
-user: happy
-pass: miner
-
-[rfc]
-#https://rfcpool.com/signup
-#CHANGE THIS
-role: disable
-user: c00w_test
-pass: x
 
 [asspenny]
-#http://asspennypool.com/register.php
-#CHANGE THIS (if you want)
+#http://asspennypool.com (Prop, merged mining NMC)
+#---Edit after this line if mined---
 role: info
 asspenny_user_apikey: xxxxxx
 user: your_username
 pass: your_password
 
 [guildminers]
-#http://guildminers.com/
-#CHANGE THIS
+#http://guildminers.com (Prop)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
-
-[yourbtc]
-#http://yourbtc.net
-#CHANGE THIS (if you want)
-role: info
-user: your_username
-pass: your_password
-
-[bitpenny]
-#http://www.bitpenny.com/
-#CHANGE THIS (if you want)
-role: info
-user: (any bitcoin address)
-pass: pass
 
 [coinotron]
-#http://coinotron.com
-#CHANGE THIS (if you want)
+#http://coinotron.com (Score)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
-######################################
-# Backup pools for when there is
-# no pool where you would earn more
-# than expected (can be any pool with
-# hopping proof algorithms, PPS has
-# lowest variance though)
-#
-######################################
+[simplecoin]
+#http://simplecoin.us (Prop, SMPPS, PPLNS, merged mining NMC)
+#---Edit after this line if mined---
+role: info
+user: your_username
+pass: your_password
+
+[nmcbitbtc]
+#http://nmcbit.com/ (Prop, merged mining NMC)
+#---Edit after this line if mined--- (if you want)
+role: info
+user: your_username
+pass: your_password
+
+##################################
+ Backup pools, that help maintain
+ efficiency, for when there is
+ no Prop. pool available
+##################################
 
 [eligius]
-#http://eligius.st/wiki/index.php/Getting_Started
-#CHANGE THIS
+#http://eligius.st (SMPPS, merged mining NMC)
+#---Edit after this line if mined---
 role: backup
 user: 1AofHmwVef5QkamCW6KqiD4cRqEcq5U7hZ
 pass: x
 #passwords can be anything on Eligius
 
 [arsbitcoin]
-#https://arsbitcoin.com/register.php
-#CHANGE THIS
+#https://arsbitcoin.com (PPS)
+#---Edit after this line if mined---
 role: backup
 user: c00w.default
 pass: fire
 
-[bitp]
-#http://bitp.it
-#CHANGE THIS
-role: backup
-bitp_user_apikey: 80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
-user: 4bjibc3R1RGF9
-pass: u5cpmndZq4Jvp
-
 [ninjac]
-#https://www.ninjacoin.com/index.php
-#CHANGE THIS
+#https://www.ninjacoin.com (PPS)
+#---Edit after this line if mined---
 role: disable
 user: paraipanakos.works
 pass: minero
 
 [abc]
-#http://www.abcpool.co/
-#CHANGE THIS
+#http://www.abcpool.co (PPS)
+#---Edit after this line if mined---
 role: disable
 abc_user_apikey: 
 user: your_username
 pass: your_password
 
-[mtredpps]
-#https://mtred.com/user/registration.html
-#CHANGE THIS
+[mtred]
+#https://mtred.com (PPS, merged mining NMC)
+#---Edit after this line if mined---
 role: disable
-mtred_user_apikey:d91c52cfe1609f161f28a1268a2915b8+
 user:scarium
 pass:x
 
 [nofeemining]
-#https://nofeemining.appspot.com/
-#CHANGE THIS
-role: info
+#https://nofeemining.appspot.com (RSMPPS)
+#---Edit after this line if mined---
+role: disable
 nofeemining_user_apikey: 4140cbc6405f4425cf91ca74e1450b66
 user: 1Q4B1LdoKHtMbj6tBLhj1cyuMWTDYFJ9Y7
 pass: x
 
-[btcservpps]
-#http://btcserv.net/
-#CHANGE THIS
+[itzod]
+# https://pool.itzod.ru (SMPPS)
+#---Edit after this line if mined---
+role: info
+user: your_username
+pass: your_password
+
+[btcserv]
+#http://btcserv.net (PPS)
+#---Edit after this line if mined---
 role: disable
 user: your_username
 pass: your_password
 
-[btcgpps]
-#http://pps.btcguild.com/register.php
-#CHANGE THIS
+[btcg]
+#https://www.btcguild.com (PPS)
+#---Edit after this line if mined---
+lp_penalty: 0
+role: info
+btcguild_user_apikey: 81a9081f4d5f32db7dbbed407cb5f686
+user: c00w_test
+pass: 1234
+
+[bitpenny]
+#http://www.bitpenny.com (PPS)
+#---Edit after this line if mined---
+role: info
+user: (any bitcoin address)
+pass: pass
+
+[polmine]
+#https://polmine.pl (PPS)
+#---Edit after this line if mined---
 role: disable
+user: c00w1456testhop
+pass: x
+
+[bitparking]
+#http://mmpool.bitparking.com (PPS)
+#---Edit after this line if mined---
+role: backup
+user: your_username
+#passwords can be anything on bitparking
+pass: your_password
+
+###############################
+ Pools that use PPLNS, DGM or
+ other payout system seen as
+ fairer by admins and miners
+###############################
+
+[eclipsemc]
+#https://eclipsemc.com (DGM)
+#---Edit after this line if mined---
+role: disable
+eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
+user: c00w_worker
+pass: x
+
+[masterpool]
+#https://masterpool.eu (PPLNS, merged mining NMC)
+#---Edit after this line if mined---
+role: info
+user: your_username
+pass: your_password
+
+[mineco]
+#https://mineco.in (PPLNS)
+#---Edit after this line if mined---
+role: disable
+user: c00w.test
+pass: x
+
+[mkalinin]
+#http://pool.mkalinin.ru (PPLNS)
+#---Edit after this line if mined---
+role: info
+user: your_username
+pass: your_password
+
+[ozco]
+#https://ozco.in (DGM)
+#---Edit after this line if mined---
+role: mine
+user:c00w.1
+pass:1234
+
+[p2pool]
+#https://en.bitcoin.it/wiki/P2Pool (PPLNS)
+#---Edit after this line if mined---
+role: disable
+user: happy
+#password and user can be anything p2pool
+pass: miner
+
+[triple]
+#https://www.triplemining.com (PPLNS)
+#---Edit after this line if mined---
+role: mine
+user: c00w_test
+pass: x
+
+[yourbtc]
+#http://yourbtc.net (DGM)
+#---Edit after this line if mined---
+role: info
 user: your_username
 pass: your_password
 
@@ -341,104 +340,52 @@ pass: your_password
 # For hopping use mine_xxx accordingly
 ######################################
 
+
 #Nmc pools
 
-[bitparking]
-#http://bitparking.com/
-#CHANGE THIS (if you want)
-role: info
-#user is name coin address
-user: NJERCMdHz8gEBmdr9pkfUZ2LQuJr17gnFZ
-#passwords can be anything on bitparking
-pass: x
-
 [nmcbit]
-#http://nmcbit.com/
-#CHANGE THIS (if you want)
-role: info
-user: your_username
-pass: your_password
-
-[masterpool]
-#https://masterpool.eu/signup
-#CHANGE THIS (if you want)
+#http://nmcbit.com (PPS, merged mining NMC)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
 [namebit]
-#http://www.namebit.org/
-#CHANGE THIS (if you want)
+#http://www.namebit.org (Prop)
+#---Edit after this line if mined---
 role: info
 #user is namecoin address
 user: nmcaddress
 #pasword must be "none"
 pass: none
 
-[bitchomp]
-#http://www.bitchomp.info/ncp/register.php
-#CHANGE THIS (if you want)
+[masterpoolnmc]
+#https://masterpool.eu (Prop, merged mining NMC)
+#---Edit after this line if mined---
 role: info
 user: your_username
 pass: your_password
 
-
-#i0c pools
-
-[i0g]
-#http://i0.btcguild.com/register.php
-#CHANGE THIS (if you want)
-role: disable
-user: your_username
-pass: your_password
-
-[i0parking]
-#http://i0pool.bitparking.com/pool
-role: disable
-user: your_username
-pass: your_password
-
-[digi0c]
-#http://i0.digbtc.net
-role: disable
+[mtrednmc]
+#https://mtred.com (Prop, merged mining NMC)
+#---Edit after this line if mined---
+role: info
 user: your_username
 pass: your_password
 
 
 #scc pools
 
-[scguild]
-#http://sc.btcguild.com/
-#CHANGE THIS (if you want)
-role: disable
-user: your_username
-pass: your_password
-
-[sodigbtc]
-#http://sobtc.digbtc.net
-#http://sc.digbtc.net
-#CHANGE THIS (if you want)
-role: disable
-user: your_username
-pass: your_password
-
-[scbitparking]
-#http://scpool.bitparking.com
-#CHANGE THIS (if you want)
-role: disable
-user: your_username
-pass: your_password
-
 [squid]
 #http://pool.squidnet.org
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: your_username
 pass: your_password
 
 [mine4us]
 #http://solid.mine-for.us
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: your_username
 pass: your_password
@@ -446,16 +393,9 @@ pass: your_password
 
 #ixc pools
 
-[ixparking]
-#http://ixpool.bitparking.com/pool
-#CHANGE THIS (if you want)
-role: disable
-user: your_username
-pass: your_password
-
 [digixc]
 #http://ix.digbtc.net
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: your_username
 pass: your_password
@@ -467,16 +407,116 @@ pass: your_password
 # to hop them at your own risk.
 ######################################
 
+[btcworld]
+#http://btcworld.de (Prop)
+#---Edit after this line if mined---
+role: disable
+user: testhop
+pass: x
+
+[rfc]
+#https://rfcpool.com (PPLNS)
+#---Edit after this line if mined---
+role: disable
+user: c00w_test
+pass: x
+
+[bitfarms]
+#http://bitfarms.ca (PPS)
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[bitp]
+#http://bitp.it (ESMPPS)
+#---Edit after this line if mined---
+role: disable
+bitp_user_apikey: 80c5dbea750563eb24e5310f94a56b38bad14dc35efb41e9ca421c92f31563ed
+user: 4bjibc3R1RGF9
+pass: u5cpmndZq4Jvp
+
+[digbtc]
+#http://www.digbtc.net (Prop)
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[ixparking]
+#http://ixpool.bitparking.com/pool
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[scguild]
+#http://sc.btcguild.com/
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[sodigbtc]
+#http://sobtc.digbtc.net
+#http://sc.digbtc.net
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[scbitparking]
+#http://scpool.bitparking.com
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[i0g]
+#http://i0.btcguild.com
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[i0parking]
+#http://i0pool.bitparking.com
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[digi0c]
+#http://i0.digbtc.net
+#---Edit after this line if mined---
+role: disable
+user: your_username
+pass: your_password
+
+[bitchomp]
+#http://www.bitchomp.info (SMPPS, merged mining BTC)
+#---Edit after this line if mined---
+role: disable
+user: your_username.SomeWorkerName or BTC_Address.NMC_Address
+pass: Anything
+
+[btcmonkey]
+#http://bitcoinmonkey.com/
+#---Edit after this line if mined---
+role: disable
+user: dah4k0r.testhop
+pass: x
+
 [unitedminers]
 #http://www.unitedminers.com
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: dah4k0r@gmail.com_testhop
 pass: testhop
 
 [swepool]
 #http://swepool.net/profile
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 swepool_user_apikey: xxxxxx
 user: your_username
@@ -484,66 +524,43 @@ pass: your_password
 
 [bmunion]
 #http://www.bitminersunion.org/
-#CHANGE THIS
+#---Edit after this line if mined---
 role: disable
 user: x
-pass: x
-
-[polmine]
-#https://polmine.pl
-#CHANGE THIS
-role: disable
-user: c00w1456testhop
 pass: x
 
 [oldpolmine]
 # Old re exp. polmine stats
 #https://polmine.pl
-#CHANGE THIS
+#---Edit after this line if mined---
 role: disable
 user: c00w1456testhop
 pass: x
 
 [btcpool24]
 #http://www.btcpool24.com
-#CHANGE THIS
+#---Edit after this line if mined---
 role: disable
 user: Sukrim.hopper
 pass: 1234
 
 [poolmunity]
 #http://poolmunity.com/
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: c00w.testhop
 pass: testhop
 
 [x8s]
 #http://btc.x8s.de/
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: testhop
 pass: x 
 
-[mineco]
-#https://mineco.in
-#CHANGE THIS (if you want)
-role: disable
-user: c00w.test
-pass: x
-
-[eclipsemc]
-#https://eclipsemc.com
-#CHANGE THIS (if you want)
-role: disable
-eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
-user: c00w_worker
-pass: x
-
 [mmf]
 #http://mining.mainframe.nl
-#CHANGE THIS (if you want)
+#---Edit after this line if mined---
 role: disable
 user: c00w.1
 pass: x
-
