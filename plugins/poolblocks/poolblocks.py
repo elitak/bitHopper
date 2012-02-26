@@ -1,18 +1,17 @@
 #License#
-# poolblocks.py is created by echiu64 and licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-# http://creativecommons.org/licenses/by-nc-sa/3.0/
-# Based on a work at github.com.
-#
-# Portions based on blockinfo.py by ryouiki and licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
+
 # TODO
 #  If too many None responses for a particular block/hash/txid, we should stop trying
 #
 
-import eventlet
-from eventlet.green import os, threading, socket
-from eventlet import greenpool
-
+import gevent
+import os, threading, socket
+import gevent.pool
 import traceback, logging
 import random
 import time
@@ -26,7 +25,6 @@ import operator
 from peak.util import plugins
 from ConfigParser import RawConfigParser
 from cookielib import CookieJar
-from util import urlutil
 
 import blockexplorer
 
@@ -45,8 +43,8 @@ class PoolBlocks:
         #self.blockexplorerRetryLimit
         #self.blockexplorerRetryDelay
         self.parseConfig()        
-        self.threadpool = greenpool.GreenPool(size=8)
-        self.execpool = greenpool.GreenPool(size=self.execpoolsize)
+        self.threadpool = gevent.pool.Pool(size=8)
+        self.execpool = gevent.pool.Pool(size=self.execpoolsize)
         
         hook = plugins.Hook('plugins.lp.announce')
         hook.register(self.lp_announce)
@@ -61,7 +59,7 @@ class PoolBlocks:
         self.log_msg(' - timeout: ' + str(self.timeout))
         self.log_msg(' - block_retrieve_limit: ' + str(self.block_retrieve_limit))
         self.cleanup()
-        eventlet.spawn_n(self.run)
+        gevent.spawn(self.run)
         
     def parseConfig(self):
         self.fetchconfig = RawConfigParser()
@@ -71,9 +69,6 @@ class PoolBlocks:
             self.refreshRandomJitter = self.bitHopper.config.getint('plugin.poolblocks', 'refreshRandomJitter')
             self.execpoolsize = self.bitHopper.config.getint('plugin.poolblocks', 'execpoolsize')
             self.block_retrieve_limit = self.bitHopper.config.getint('plugin.poolblocks', 'block_retrieve_limit')
-            self.rate_limit = self.bitHopper.config.getint('plugin.poolblocks', 'ratelimit')
-            if self.bitHopper.config.getboolean('plugin.poolblocks', 'use_ratelimit'):
-                self.fetch = urlutil.URLFetchRateLimit(self.bitHopper, self.rate_limit)
         except Exception, e:
             self.log_msg('ERROR parsing config, possible missing section or configuration items: ' + str(e))
             if self.bitHopper.options.debug:
@@ -92,18 +87,18 @@ class PoolBlocks:
         while True:
             try:
                 self.fetchBlocks()
-                self.execpool.waitall()
-                self.threadpool.waitall()
+                self.execpool.join()
+                self.threadpool.join()
                 if self.bitHopper.options.trace:
                     #self.report()
                     pass
                 interval = self.refreshInterval
                 interval += random.randint(0, self.refreshRandomJitter)
                 self.log_dbg('sleep ' + str(interval))
-                eventlet.sleep(interval)
+                gevent.sleep(interval)
             except Exception, e:
                 traceback.print_exc()
-                eventlet.sleep(30)
+                gevent.sleep(30)
     
     def cleanup(self):
         try:
@@ -125,7 +120,7 @@ class PoolBlocks:
                     except: mode = 'b'
                     try: type = self.fetchconfig.get(pool, 'type')
                     except: type = None
-                    self.execpool.spawn_n(self.fetchBlocksFromPool, pool, url, searchStr, mode, type)
+                    self.execpool.spawn(self.fetchBlocksFromPool, pool, url, searchStr, mode, type)
                 except Exception, e:
                     if self.bitHopper.options.debug:
                         traceback.print_exc()
@@ -200,7 +195,7 @@ class PoolBlocks:
             data = urllib.urlencode(values)
             try:
                 response = opener.open(auth_url, data, self.timeout)
-                eventlet.sleep(2)
+                gevent.sleep(2)
                 response = opener.open(url, None, self.timeout)
                 outputs = searchPattern.findall(response.read())
                 if len(outputs) < 5:
@@ -219,12 +214,9 @@ class PoolBlocks:
         else:
             try:
                 data = None
-                if self.fetch != None:
-                    data = self.fetch.retrieve(url)
-                else:
-                    req = urllib2.Request(url)
-                    response = urllib2.urlopen(url, None, self.timeout)
-                    data = response.read()
+                req = urllib2.Request(url)
+                response = urllib2.urlopen(url, None, self.timeout)
+                data = response.read()
                 outputs = searchPattern.findall(data)
             except Exception, e:
                 self.log_msg('Error ' + str(pool) + ' : ' + str(e))
@@ -244,7 +236,7 @@ class PoolBlocks:
                         self.blocks[blockNumber].owner = pool
                         blockHash = self.blocks[blockNumber].hash
                         if blockHash is None:
-                            self.blocks[blockNumber].hash = blockexplorer.getBlockHashByNumber(blockNumber, urlfetch=self.fetch)
+                            self.blocks[blockNumber].hash = blockexplorer.getBlockHashByNumber(blockNumber)
                         if blockHash is not None:
                             hook = plugins.Hook('plugins.poolblocks.verified')
                             hook.notify(blockNumber, blockHash, pool)
@@ -256,7 +248,7 @@ class PoolBlocks:
                 else:
                     self.log_trace('[' + pool + '] block ' + str(blockNumber) + ' does not exist, adding')
                     matchCount += 1
-                    self.threadpool.spawn_n(self.fetchBlockFromPool, pool, blockNumber, mode)
+                    self.threadpool.spawn(self.fetchBlockFromPool, pool, blockNumber, mode)
                 
         elif mode == 'h':
             # pool reports block hash solved
@@ -277,7 +269,7 @@ class PoolBlocks:
                 if not found:
                     matchCount += 1
                     self.log_trace('[' + pool + '] Hash not found, looking up block number')
-                    self.threadpool.spawn_n(self.fetchBlockFromPool, pool, blockHash, mode)
+                    self.threadpool.spawn(self.fetchBlockFromPool, pool, blockHash, mode)
                     
         elif mode == 'g':
             # pool uses transaction id
@@ -298,7 +290,7 @@ class PoolBlocks:
                 if not found:
                     self.log_trace('[' + pool + '] TXID not found, looking up block number and hash')
                     matchCount += 1
-                    self.threadpool.spawn_n(self.fetchBlockFromPool, pool, txid, mode)               
+                    self.threadpool.spawn(self.fetchBlockFromPool, pool, txid, mode)               
         
         self.log_msg('[{0}] parsed {1} blocks, {2} matches'.format(pool, len(outputs), matchCount) )
 

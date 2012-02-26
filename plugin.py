@@ -1,10 +1,11 @@
-#License#
-#bitHopper by Colin Rice is licensed under a 
-#Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
-import eventlet, importlib, logging
-from eventlet.green import os
+import importlib, logging
+import os
 
 class Plugin():
     """Class which loads plugins from folders in the plugins folder."""
@@ -24,7 +25,7 @@ class Plugin():
                     if name.split('.')[-1] == 'cfg':
                         pool_configs.append(os.path.join(dirpath, name))
                 except Exception, e:
-                    logging.info("Unable to load config file for:\n%s \n\n%s") % (dirpath, e)
+                    logging.info("Unable to load config file for:\n%s \n\n%s", (dirpath, e))
         self.bitHopper.pool.pool_configs += pool_configs
         self.bitHopper.pool.loadConfig()
 
@@ -76,6 +77,6 @@ class Plugin():
                         logging.info("" + item + " loaded")
                     except Exception, e:
                         logging.info("ERROR LOADING PLUGIN: " + item)
-                        logging.info(e)
+                        logging.info(str(e))
                 else:
                     logging.info("" + item + " has been disabled")

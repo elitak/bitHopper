@@ -1,72 +1,50 @@
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
-import re, eventlet, logging
-from eventlet.green import threading, socket, urllib2
+import gevent, logging
+import threading
 from ConfigParser import NoOptionError
+import diff
 
-# Global timeout for sockets in case something leaks
-socket.setdefaulttimeout(900)
+from btcnet_wrapper import btcnet_info
 
 class Exchange():
     "Pulls Exchange rates, updates them and calculates profitability"
-    def __init__(self, bitHopper):
+    
+    def __init__(self, bitHopper, difficulty):
         self.bitHopper = bitHopper
-        try: self.calculate_profit = bitHopper.config.getboolean('main', 'calculate_profit')
-        except NoOptionError: self.calculate_profit = True
+        self.difficulty = difficulty
+        try: 
+            self.calculate_profit = bitHopper.config.getboolean('main', 'calculate_profit')
+        except NoOptionError: 
+            self.calculate_profit = True
+            
         self.lock = threading.RLock()
-        eventlet.spawn_n(self.update_profitability)
         self.rate = {'btc':1.0}
         self.profitability = {'btc':1.0}
-    
-
-    def updater(self, coin, url_diff, reg_exp = None):
-        # Generic method to update the exchange rate of a given currency
-        if self.calculate_profit == True:
-            try:
-                #timeout = eventlet.timeout.Timeout(5, Exception(''))
-                logging.info('Updating Exchange Rate of ' + coin)
-                useragent = {'User-Agent': self.bitHopper.config.get('main', 'work_user_agent')}
-                req = urllib2.Request(url_diff, headers = useragent)
-                response = urllib2.urlopen(req)
-                if reg_exp == None: 
-                    output = response.read()
-                else:
-                    diff_str = response.read()
-                    output = re.search(reg_exp, diff_str)
-                    output = output.group(1)
-                self.rate[coin] = float(output)
-                logging.debug('Retrieved Exchange rate for ' +str(coin) + ': ' + output)
-            except Exception, e:
-                logging.debug('Unable to update exchange rate for ' + coin + ': ' + str(e))
-                self.rate[coin] = 0.0
-            finally:
-                #timeout.cancel()
-                pass
-        else: self.rate[coin] = 1.0
+        
+        gevent.spawn(self.update_profitability)
 
     def calc_profit(self):
         with self.lock:
-            btc_diff = self.bitHopper.difficulty.diff['btc']
+            btc_diff = self.difficulty.diff['btc']
             for coin in self.rate:
                 if self.calculate_profit == True:
-                    if coin not in self.bitHopper.difficulty.diff:
+                    if coin not in self.difficulty.diff:
                         continue
                     diff = self.bitHopper.difficulty.diff[coin]
                     self.profitability[coin] = (float(btc_diff) / diff * self.rate[coin])
-                else: self.profitability[coin] = 1.0
+                else: 
+                    self.profitability[coin] = 1.0
+            self.rate['btc'] = 1.0
 
     def update_profitability(self):
         while True:
-            "Tries to update profit from the internet"
             with self.lock:
-                for market in self.bitHopper.altercoins.itervalues():
-                    if market.has_key('site_exchange') and market.has_key('pattern_site_exchange'):
-                        self.updater(market['long_name'], market['site_exchange'], market['pattern_site_exchange'])
-                
+                for coin in btcnet_info.get_coins():
+                    self.rate[coin.name] = getattr(coin, 'exchange', 0)
                 self.calc_profit()
-
-    
-            eventlet.sleep(60*5)
+            gevent.sleep(60*5)

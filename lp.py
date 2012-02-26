@@ -1,9 +1,11 @@
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
-import json, eventlet, traceback, logging
-from eventlet.green import time, threading, socket
+import json, gevent, traceback, logging, gevent.coros
+import time, threading, socket
 
 from peak.util import plugins
 
@@ -41,7 +43,7 @@ class LongPoll():
         self.lock = threading.RLock()
         hook_end = plugins.Hook('plugins.lp.init.end')
         hook_end.notify(self, bitHopper)
-        eventlet.spawn_n(self.start_lp)
+        gevent.spawn(self.start_lp)
 
     # return all blocks data (excluding special "_defer" entry)
     def getBlocks(self):
@@ -73,7 +75,7 @@ class LongPoll():
                 old_defer = self.blocks[block]['_defer']
             else:
                 old_defer = None
-            new_defer = threading.Lock()
+            new_defer = gevent.coros.Semaphore()
             new_defer.acquire()
             self.blocks[block]['_defer'] = new_defer
             if old_defer:
@@ -84,7 +86,7 @@ class LongPoll():
                 self.bitHopper.pool.servers[server]['shares'] = 0
                 self.bitHopper.scheduler.reset()
                 self.bitHopper.select_best_server()
-                eventlet.spawn_n(self.api_check,server,block,old_shares)
+                gevent.spawn(self.api_check,server,block,old_shares)
 
             #If We change servers trigger a LP.
             if old_owner !=server:
@@ -94,10 +96,14 @@ class LongPoll():
 
                 #Figure out which server to source work from
                 source_server = self.bitHopper.pool.get_work_server()
-                work, _, source_server = self.bitHopper.work.jsonrpc_getwork(source_server, [])
+                work, _, source_server, auth = self.bitHopper.work.jsonrpc_getwork(source_server, [])
+                
+                #Store the merkle root
+                merkle_root = work['data'][72:136]
+                self.bitHopper.getwork_store.add(source_server, merkle_root, auth)
 
                 #Trigger the LP Callback with the new work.
-                self.bitHopper.lp_callback.new_block(work, source_server) 
+                self.bitHopper.lp_callback.new_block(work) 
 
             hook_end = plugins.Hook('plugins.lp.set_owner.end')
             hook_end.notify(self, server, block)
@@ -120,8 +126,8 @@ class LongPoll():
                 if info['lp_address'] != None:
                     self.pull_lp(info['lp_address'],server)
                 else:
-                    eventlet.spawn_n(self.pull_server, server)
-            eventlet.sleep(60*60)
+                    gevent.spawn(self.pull_server, server)
+            gevent.sleep(60*60)
                 
                 
     def pull_server(self, server):
@@ -134,20 +140,30 @@ class LongPoll():
                 self.bitHopper.pool.servers[server]['shares'] += old_shares
                 self.bitHopper.select_best_server()
 
-    def add_block(self, block, work, server):
+    def add_block(self, block, work, server, auth):
         """ Adds a new block. server must be the server the work is coming from """
         with self.lock:
             hook_start = plugins.Hook('plugins.lp.add_block.start')
-            hook_start.notify(self, block, work, server)
+            try:
+                hook_start.notify(self, block, work, server)
+            except:
+                traceback.print_exc()
             self.blocks[block]={}
             self.blocks[block]['_time'] = time.localtime()
-            self.bitHopper.lp_callback.new_block(work, server)
+            
+            #Trigger an LP
+            
+            #Store the merkle root
+            merkle_root = work['data'][72:136]
+            self.bitHopper.getwork_store.add(server, merkle_root, auth)
+            
+            self.bitHopper.lp_callback.new_block(work)
             self.blocks[block]["_owner"] = None
             self.lastBlock = block
         hook_end = plugins.Hook('plugins.lp.add_block.end')
         hook_end.notify(self, block, work, server)
 
-    def receive(self, body, server):
+    def receive(self, body, server, auth):
         hook_start = plugins.Hook('plugins.lp.receive.start')
         hook_start.notify(self, body, server)
         if server in self.polled:
@@ -165,8 +181,8 @@ class LongPoll():
                 self.errors[server] += 1
             #timeout? Something bizarre?
             if self.errors[server] < 3 or info['role'] == 'mine_lp':
-                eventlet.sleep(1)
-                eventlet.spawn_after(0,self.pull_lp, self.pool.servers[server]['lp_address'],server, False)
+                gevent.sleep(1)
+                gevent.spawn(self.pull_lp, self.pool.servers[server]['lp_address'],server, False)
             return
         try:
             output = True
@@ -183,7 +199,7 @@ class LongPoll():
                 if block not in self.blocks:
                     logging.info('New Block: ' + str(block))
                     logging.info('Block Owner ' + server)
-                    self.add_block(block, work, server)
+                    self.add_block(block, work, server, auth)
 
             #Add the lp_penalty if it exists.
             with self.lock:
@@ -211,7 +227,7 @@ class LongPoll():
             #timeout? Something bizarre?
             if self.errors[server] > 3 and info['role'] != 'mine_lp':
                 return
-        eventlet.spawn_n(self.pull_lp, self.pool.servers[server]['lp_address'],server,output)
+        gevent.spawn_later(0, self.pull_lp, self.pool.servers[server]['lp_address'],server,output)
         
     def clear_lp(self,):
         pass
@@ -225,8 +241,8 @@ class LongPoll():
             info = self.bitHopper.pool.get_entry(server)
             info['lp_address'] = url
             if server not in self.polled:
-                self.polled[server] = threading.Lock()
-            eventlet.spawn_n(self.pull_lp, url,server)
+                self.polled[server] = gevent.coros.Semaphore()
+            gevent.spawn(self.pull_lp, url,server)
         except Exception, e:
             logging.info('set_lp error')
             logging.info(e)

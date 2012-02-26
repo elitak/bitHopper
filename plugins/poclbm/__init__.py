@@ -1,7 +1,9 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 from BitcoinMiner import *
 from optparse import OptionGroup, OptionParser
@@ -9,7 +11,7 @@ from time import sleep
 import HttpTransport
 import pyopencl as cl
 import socket
-import eventlet
+import gevent
 
 def main(bitHopper):
     try:
@@ -51,7 +53,7 @@ class poclbmMiner():
         self.bitHopper.website.sites.append(poclbmSite(self))        
     #Taken from poclbm's public domain frontend.
     def new_miner(self, option_string):
-        eventlet.spawn_n(self._new_miner, option_string)
+        gevent.spawn(self._new_miner, option_string)
 
     def _new_miner(self, option_string):
 

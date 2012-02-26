@@ -1,7 +1,11 @@
 #!/usr/bin/python
-#License#
-# payouts.py by Cutmaster Flex and licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-# Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
+
+
 #
 # Usage: Add a unique wallet:xxxxx option for each pool to user.cfg
 #        this will overwrite any previous manually set payout value
@@ -9,8 +13,8 @@
 import traceback, logging
 from jsonrpc import ServiceProxy
 
-import eventlet, logging
-from eventlet.green import time, threading
+import gevent
+import time, threading
 
 class Payouts():
     def __init__(self, bitHopper):
@@ -18,7 +22,7 @@ class Payouts():
         self.interval = 600
         self.parseConfig()
         self.log_msg("Payouts interval: " + str(self.interval))
-        eventlet.spawn_n(self.run)
+        gevent.spawn(self.run)
         self.lock = threading.RLock()
             
     def parseConfig(self):
@@ -53,4 +57,4 @@ class Payouts():
                         self.log_dbg("Error getting getreceivedbyaddress")
                         self.log_dbg(e)
 
-            eventlet.sleep(self.interval)
+            gevent.sleep(self.interval)

@@ -1,28 +1,30 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import warnings
 warnings.filterwarnings('ignore','' , UserWarning)
 
 try:
-    import eventlet
+    import gevent
 except Exception, e:
-    print "You need to install greenlet. See the readme."
+    print "You need to install greenlet and gevent. See the readme."
     raise e
-from eventlet import wsgi, greenpool
-from eventlet.green import os, time, socket
+import gevent.monkey
+import gevent.wsgi
 
 #Not patching thread so we can spin of db file ops.
-eventlet.monkey_patch(os=True, select=True, socket=True, thread=False, time=True, psycopg=True)
-#from eventlet import debug
-#debug.hub_blocking_detection(True)
+gevent.monkey.patch_all(thread=False, time=False)
+
+import logging, sys
+logging.basicConfig(stream=sys.stdout, format="%(asctime)s|%(module)s: %(message)s", datefmt="%H:%M:%S", level = logging.INFO)
+
+import os, time, socket, logging
 
 from peak.util import plugins
-
-import logging
 
 # Global timeout for sockets in case something leaks
 socket.setdefaulttimeout(900)
@@ -43,12 +45,10 @@ import lp_callback
 import plugin
 import api
 import exchange
-
+import Workers
 
 import ConfigParser
 import sys
-
-
 
 class BitHopper():
     def __init__(self, options, config):
@@ -69,13 +69,12 @@ class BitHopper():
         self.scheduler = None
         self.lp_callback = lp_callback.LP_Callback(self)
         self.difficulty = diff.Difficulty(self)  
-        self.exchange = exchange.Exchange(self)
+        self.exchange = exchange.Exchange(self, self.difficulty)
         self.pool = None        
         self.db = database.Database(self)                       
         self.pool = pool.Pool_Parse(self)
         self.api = api.API(self) 
         self.pool.setup(self)
-        self.work = work.Work(self)
         self.speed = speed.Speed()
         self.getwork_store = getwork_store.Getwork_store(self)
         self.data = data.Data(self)       
@@ -83,9 +82,12 @@ class BitHopper():
         self.auth = None
         
         self.website = website.bitSite(self)
-        self.pile = greenpool.GreenPool()
+        self.workers = Workers.Workers(self)
+        
+        self.work = work.Work(self)
+        
         self.plugin = plugin.Plugin(self)
-        self.pile.spawn_n(self.delag_server)
+        gevent.spawn(self.delag_server)
 
     def reloadConfig(self):
         self.config = ConfigParser.ConfigParser()
@@ -94,13 +96,13 @@ class BitHopper():
             self.pool.loadConfig()
         
     def reject_callback(self, server, data, user, password):
-        eventlet.spawn_n(self.data.reject_callback, server, data, user, password)
+        gevent.spawn(self.data.reject_callback, server, data, user, password)
 
     def data_callback(self, server, data, user, password):
-        eventlet.spawn_n(self.data.data_callback, server, data, user, password)
+        gevent.spawn(self.data.data_callback, server, data, user, password)
 
     def update_payout(self, server, payout):
-        eventlet.spawn_n(self.db.set_payout, server, float(payout))
+        gevent.spawn(self.db.set_payout, server, float(payout))
         self.pool.servers[server]['payout'] = float(payout)
 
     def get_options(self):
@@ -116,6 +118,10 @@ class BitHopper():
         else:
             server_list, backup_list = self.scheduler.select_best_server()
 
+        if getattr(self, 'workers', None):
+            server_list = [x for x in server_list if self.workers.get_worker(x)[0]]
+            backup_list = [x for x in backup_list if self.workers.get_worker(x)[0]]
+
         old_server = self.pool.get_current()
             
         #Find the server with highest priority
@@ -129,7 +135,7 @@ class BitHopper():
         server_list = [server for server in server_list 
                        if lambda x:self.pool.get_entry(x)['priority'] >= max_priority]
 
-        if len(server_list) == 0:
+        if len(server_list) == 0 and len(backup_list):
             try:
                 backup_type = self.config.get('main', 'backup_type')
             except:
@@ -148,10 +154,9 @@ class BitHopper():
             elif backup_type == 'latehop':
                 backup_list.sort(key=lambda pool: -1*self.pool.servers[pool]['shares'])
                 server_list = [backup_list[0]]
-
+                
         if len(server_list) == 0:
-            logging.info('FATAL Error, scheduler did not return any pool!')
-            os._exit(1)
+            logging.error('Fatal Error, No valid pools configured!')
 
         self.pool.current_list = server_list
         self.pool.build_server_map()
@@ -177,7 +182,7 @@ class BitHopper():
             for server in self.pool.get_servers():
                 info = self.pool.servers[server]
                 if info['lag'] == True:
-                    data, headers = self.work.jsonrpc_call(server, [])
+                    data, headers, auth = self.work.jsonrpc_call(server, [])
                     logging.debug('Got' + server + ":" + str(data))
                     if data != None:
                         info['lag'] = False
@@ -185,7 +190,7 @@ class BitHopper():
                     else:
                         logging.debug('Not delagging')
             sleeptime = self.config.getint('main', 'delag_sleep')
-            eventlet.sleep(sleeptime)
+            gevent.sleep(sleeptime)
 
 def main():
     parser = optparse.OptionParser(description='bitHopper')
@@ -289,7 +294,7 @@ def main():
 
     hook = plugins.Hook('plugins.bithopper.startup')
     hook.notify(bithopper_instance, config, options)
-        
+    
     while True:
         try:
             listen_port = options.port            
@@ -301,13 +306,17 @@ def main():
 
             #This ugly wrapper is required so wsgi server doesn't die
             socket.setdefaulttimeout(None)
-            wsgi.server(eventlet.listen((options.ip,listen_port), backlog=500),bithopper_instance.website.handle_start, log=log, max_size = 8000)
+            gevent.wsgi.WSGIServer((options.ip, listen_port),
+                bithopper_instance.website.handle_start, 
+                backlog=512,  log=log).serve_forever()
             socket.setdefaulttimeout(lastDefaultTimeout)
             break
         except Exception, e:
             logging.info("Exception in wsgi server loop, restarting wsgi in 60 seconds\n%s" % (str(e)))
-            eventlet.sleep(60)
-    bithopper_instance.db.close()
+            gevent.sleep(60)
+        except (KeyboardInterrupt, SystemExit):
+            bithopper_instance.db.close()
+            sys.exit()
 
 if __name__ == "__main__":
     main()

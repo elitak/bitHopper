@@ -1,12 +1,13 @@
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons 
-#Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import json, re, logging
 
-import eventlet
-from eventlet.green import time, socket
+import gevent, traceback
+import time, socket
 
 # Global timeout for sockets in case something leaks
 socket.setdefaulttimeout(900)
@@ -83,7 +84,6 @@ class API():
 
     def errsharesResponse(self, error, server_name):
         logging.info(server_name + ' api error:' + str(error))
-        #traceback.print_exc()
         pool = server_name
         self.pool.servers[pool]['err_api_count'] += 1
         self.pool.servers[pool]['init'] = True
@@ -346,8 +346,8 @@ class API():
         except Exception, e:
             update_time = self.errsharesResponse(e, server)
         finally:
-            eventlet.spawn_after(update_time, self.update_api_server, server)
+            gevent.spawn_later(update_time, self.update_api_server, server)
 
     def update_api_servers(self):
         for server in self.pool.servers:
-            eventlet.spawn_n(self.update_api_server, server)
+            gevent.spawn(self.update_api_server, server)

@@ -3,14 +3,24 @@
    sobre la minas conocidas por bH,
  recogida aqui con fines informativos
 
-   Ultima actualizacion: Dic 31, 2011
+   Ultima actualizacion: Feb 15, 2012
 ######################################
 ######################################
    Minas anadidas recientemente,
       saltalas a tu riesgo.
 ######################################
 
-###################################### 
+######################################
+
+
+[a1]
+#http://www.a1bitcoinpool.com
+info_1: Anterior TNTmining (cerrada sin aviso), trabajando al primer bloque, pagos prop., reporta tu opinion - 15.2 Ghash/s @ 01.19.12
+
+
+[alex]
+#https://pool.schaetter.us
+info_1: Pequena mina prop., reporta tu impresion - 2.7 Ghash/s @ 01.19.12
 
 
 [asspenny]
@@ -26,6 +36,7 @@ info_4: La mineria unida esta implementada, op esta resolviendo pequenos errores
 info_1: Ralentiza stats y no tiene una actitud muy civica con los mineros (pagina 95 - hilo bH en el foro principal)
 info_2: Puedes probar minar con el rol mine_lp - 466.02 Ghash/s @ 08.23.11
 info_3: Perdidas de conexion frequentes debido trabajos con el cortafuegos (twitter) - 295.14 Ghash/s @ 09.19.11
+info_4: Bitlc.net se valida con DNSSEC para mas seguridad (twitter) - 282.64 Ghash/s @ 01.27.12
 
 
 [bcpool]
@@ -34,6 +45,11 @@ info_1: Medidas anti-hopping basadas en "ventana de participacion" (pagina 36 - 
 info_2: Desactiva las medidas anti-hopper si donas (pagina 111 - hilo bH en el foro principal)
 info_3: Truca los stats json para que te quedes minando con ellos (pagina 184 - hilo bH en el foro principal) - 88.63 Ghash/s @ 08.23.11
 info_4: La mina impone una penalidad de 50% solo para mineros ocasionales (pagina de mina) - 68.87 Ghash/s @ 09.06.11
+
+
+[bitcash]
+#http://bitcash.cz/pool
+info_1: Por favor reporta tu experiencia en el foro o IRC - 18 Ghash/s @ 02.15.12
 
 
 [bitclockers]
@@ -62,6 +78,11 @@ info_1: Sistema de pago por puntuacion, intenta minar con mine_slush (pagina 164
 info_2: Puedes probar el nuevo rol mine_c disponible para minas con puntuacion y ajustar c: 550 - 223.68 Ghash/s @ 09.21.11
 
 
+[btcjapan]
+#https://bitcoin.ne.jp
+info_1: Mina con pagos prop, Por favor reporta tu experiencia en el foro o IRC - 2 Ghash/s @ 02.15.12
+info_2: Haz click en el campo de titulo para habilitar el ajuste de minero (pagina 203 - hilo bH en el foro principal) @ 02.16.12
+
 [coinotron]
 #http://coinotron.com
 info_1: Mina con sistema por puntuacion proporcional, usa el rol mine_c (prueba ajustando c: 6), mina de multiples monedas - 52.94 GHash/s @ 09.28.11
@@ -71,6 +92,7 @@ info_1: Mina con sistema por puntuacion proporcional, usa el rol mine_c (prueba 
 #https://deepbit.net
 info_1: La mina mas grande que hay, minar con ellos te ayudara cobrar regularmente - 5723 Ghash/s @ 08.23.11
 info_2: Tipo de paga PPS disponible con una comision de 10% - 3061 Ghash/s @ 10.14.11
+info_3: Habilitada la deteccion de hopers con auto-baneo si tienes por encima de 6gh – 3577 Ghash/s @ 02.01.12
 
 
 [guildminers]
@@ -84,12 +106,6 @@ info_2: La direccion de mineria podria no ser correcta, requieren un programa mi
 info_1: Cambio a sistema PPS (pagina 154 - hilo bH en el foro principal)
 info_2: Se quedaron con el sist. Proporcional (Canal IRC) - 36 GHash/s @ 08.23.11
 info_3: Caida unas horas, probablemente ataque ddos - 25 GHash/s @ 09.27.11
-
-
-[simplecoin]
-#http://simplecoin.us
-info_1: Pequena mina proporcional que tambien dispone de sistemas de pago y monedas alternativas (pagina de mina) - 8.67 Ghash/s @ 10.06.11
-info_2: Mineria unida esta implementada para cada tipo de pago BTC disponible (foro simplecoin) - 21.70 Ghash/s @ 10.08.11
 
 
 [slush]
@@ -135,6 +151,7 @@ info_1: Mina PPS, 0% comisiones, paga shares "stale"
 info_2: Invalidos muy altos con poclbm, mejor utilizar phoenix 1.5+
 info_3: Registro temporalmente deshabilitado - 111.9 GHash/s @ 08.23.11
 info_4: La creacion de cuentas esta habilitada de nuevo - 143 GHash/s @ 10.03.11
+info_5: La pasa en cobrar un 4%de comision - 500.3 GHash/s @ 01.16.12
 
 
 [mtred]
@@ -156,6 +173,7 @@ info_2: Ha cambiado a sistema SMPPS (hilo de mina en foro principal)
 info_1: Mina pequena, raportar informacion sobre ella en el foro - 2.94 GHash/s @ 08.23.11
 info_2: Sistema de pago PPS disponible en caso de utilizar como mina de respaldo - 4.60 GHash/s @ 08.31.11
 info_3: El admin decide implementar FIFO PPS (pagina 4 - hilo de mina en foro principal) -  11.36 GHash/s @ 09.09.11
+info_4: La mina ha sido misteriosamente hackeada y mas de 400 btc han sido robados (hilo de mina en foro principal) - 0 GHash/s @ 02.07.12
 
 
 [btcg]
@@ -183,10 +201,10 @@ info_6: Cambiaron de forma retroactiva el sistema de pago a PPS (http://forum.po
 
 
 [bitparking]
-#http://bitparking.com
+#http://mmpool.bitparking.com
 info_1: Mina namecoins (mine_nmc) - 20.2 GHash/s @ 08.23.11
 info_2: La mina ha sido cerrada el 5 de Octubre, 2011
-info_3: Fusionó la minería ya está disponible, es de pago PPS pura (sitio web de la piscina) - 56.37 Ghash/s @ 01.03.12
+info_3: Vuelve abrir con la mineria unida habilitada, tipo de pago PPS (pagina de mina) - 56.37 Ghash/s @ 01.03.12
 
 
 ################################
@@ -227,6 +245,7 @@ info_2: Stats funcionan - 60.5 GHash/s @ 08.23.11
 info_3: Necesitan un poco de ayuda para resolver este ultimo bloque (encontrado) - 61.2 GHash/s @ 09.18.11
 info_4: 10% bonus en las siguientes 10 rondas (pagina de mina) - 53.85 GHash/s @ 10.03.11
 info_5: Cambiaran a sistema de pago DGM desde el siguiente bloque (pagina 1 - hilo de mina en el foro principal) - 18.92 GHash/s @ 12.10.11
+info_6: Los fondos han sido comprometidos por un ataque, estan trabajando para arreglarlo (hilo de mina en el foro principal) - 307.70 GHash/s @ 02.05.12
 
 
 [p2pool]
@@ -245,6 +264,13 @@ info_3: Cambio a sistema PPLNS (pagina de mina) - 18.9 GHash/s @ 11.19.11
 [yourbtc]
 #http://yourbtc.net
 info_1: Utiliza el sistema DGM (pagina de mina + pagina 2 - hilo de mina en foro principal) - 4.3 GHash/s @ 09.21.11
+
+
+[simplecoin]
+#http://simplecoin.us
+info_1: Pequena mina proporcional que tambien dispone de sistemas de pago y monedas alternativas (pagina de mina) - 8.67 Ghash/s @ 10.06.11
+info_2: Mineria unida esta implementada para cada tipo de pago BTC disponible (foro simplecoin) - 21.70 Ghash/s @ 10.08.11
+info_3: Han eliminado los pagos prop para todas la monedas menos LTC (pagina de mina) - 29.70 Ghash/s @ 02.01.12
 
 
 #####################################
@@ -336,7 +362,11 @@ Pool-X
 
 
 GPUTECH Bitcoin Mining Pool
-#https://gputech.net/
+#https://gputech.net
+
+
+50Btc
+#https://50btc.com
 
 
 #####################################

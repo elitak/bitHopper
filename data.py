@@ -1,10 +1,12 @@
-  #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#!/usr/bin/python
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
-import eventlet
-from eventlet.green import threading, time, socket
+import gevent
+import threading, time, socket
 import logging
 
 # Global timeout for sockets in case something leaks
@@ -29,7 +31,7 @@ class Data():
 
             for user in users:
                 self.users[user] = {'shares':users[user]['shares'],'rejects':users[user]['rejects'], 'last':0, 'shares_time': [], 'hash_rate': 0}
-        eventlet.spawn_n(self.prune)
+        gevent.spawn(self.prune)
 
     def prune(self):
         while True:
@@ -40,7 +42,7 @@ class Data():
                             if len(self.users[user]['shares_time']) > 1:
                                 self.users[user]['shares_time'].remove(share_time)
                     self.users[user]['hash_rate'] = (len(self.users[user]['shares_time']) * 2**32) / (60 * 15 * 1000000)
-            eventlet.sleep(30)
+            gevent.sleep(30)
     
     def get_users(self):
         with self.lock:

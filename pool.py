@@ -1,11 +1,13 @@
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import json, re, ConfigParser, sys, random, traceback, logging
 import pool_class
-import eventlet
-from eventlet.green import threading, os, time, socket
+import gevent
+import threading, os, time, socket
 
 # Global timeout for sockets in case something leaks
 socket.setdefaulttimeout(900)
@@ -119,6 +121,21 @@ class Pool_Parse():
     def get_work_server(self):
         """A function which returns the server to query for work.
            Take the server map and cycles through it"""
+           
+        if not self.server_map:
+            logging.error('Please configure some pools!')
+            logging.error('Go to localhost:8337/worker')
+            logging.error('Then restart bitHopper')
+            gevent.sleep(1)
+            return None
+            
+        if not self.current_list:
+            logging.error('Please configure some pools!')
+            logging.error('Go to localhost:8337/worker')
+            logging.error('Then restart bitHopper')
+            gevent.sleep(1)
+            return None
+           
         value = self.i
         self.i = (self.i +1) % 100
         if value in self.server_map:
@@ -141,7 +158,7 @@ class Pool_Parse():
             for _ in xrange(v):
                 server_map[i] = k
                 i += 1
-        while i <= 99:
+        while i <= 99 and self.current_list:
             server_map[i] = self.current_list[i%len(self.current_list)]
             i += 1
         self.server_map = server_map

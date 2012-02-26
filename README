@@ -1,87 +1,73 @@
-# License
-
-BitHopper by Colin Rice is licensed under a Creative Commons
-Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-Based on a work at github.com
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 
 # Ubuntu installation
+---------------------------------------------------------------------
+Note: Use python2.7. There have been bugs with pythongit on 2.6
 
-In order to run bitHopper you need to have Python installed in your system. Version 2.7 of Python is suggested
-although it has been tested and appears to work with version 2.6 too. To find out which version of Python your
-system currently has type "python -V" in a shell console.
+Run:
 
-If you don't have Python installed at all you have to run:
+sudo apt-get install python2.7 git python2.7-dev python-setuptools python-pip libevent-dev 
+sudo pip install gevent setuptools gitpython httplib2 --upgrade
+git clone git://github.com/c00w/bitHopper.git
+cd bitHopper
+python bitHopper.py
 
-sudo apt-get install python
+Tested and working in Ubuntu 11.10.
 
-After verifying that you have Python installed then you have to install some extra packages that bitHopper
-requires to function properly:
+# Other Linux Installations
+---------------------------------------------------------------------
+Note: Use pip to install your libraries. We need fairly recent versions of everything.
+The libraries bundled with debian are too old.
 
-sudo apt-get install python-dev python-setuptools
-sudo easy_install greenlet
-sudo easy_install importlib
-
-If you would like to use the poclbm miner plugin do
-sudo easy_install numpy
-
-Then download and run bitHopper
-
-Tested and working in Ubuntu 11.04, 10.10 and 10.04 LTS
-
-
-#Archlinux installation
-
-pacman -Sy python2-pip mercurial
-pip2 install eventlet
-hg clone https://bitbucket.org/ambroff/greenlet
-cd greenlet
-python2 setup.py install
-
-Then download and run bitHopper
-
-I know its weird but the pip version of greenlet causes segfaults in 
-archlinux. So you have to install from the oficial repo on bitbucket.
 
 # Instructions for Windows users
+-----------------------------------------------------------------
 NOTE: IF YOU ARE RUNNING LOTS OF MINERS USE LINUX.
+It's a lot more stable and takes less modifications.
 
-ActiveState Python(recommended, use 32 bit even when you have 64 bit system)
-http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi
+Download and install
+1. Python
+http://python.org/ftp/python/2.7.2/python-2.7.2.msi
 
-Greenlet
-http://pypi.python.org/pypi/greenlet
+2. Greenlet
+http://pypi.python.org/packages/2.7/g/greenlet/greenlet-0.3.4.win32-py2.7.exe
 
-Although you can download greenlet from the original web site and compile the source manually this is
-known to cause issues for lot of users. It is much easier to install greenlet automatically using Python
-package manager that comes with ActiveState Python.
+3. Gevent
+http://gevent.googlecode.com/files/gevent-1.0b1.win32-py2.7.msi
 
-To do this you have to click:
+4. SetupTools
+http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
 
-Start -> All Programs -> ActiveState ActivePython 2.7(32-bit) -> Python Package Manager
+5. Install Git
+http://code.google.com/p/msysgit/downloads/list?can=3
+MAKE SURE TO SELECT THE OPTION TO RUN GIT IN THE WINDOWS COMMAND PROMPT.
 
-Console will open up and to this console you have to type:
+7. BitHopper
+github.com/c00w/bitHopper
+Go to downloads and hit zip. Extract the zip to your desktop
 
-pypm install greenlet
+8. Bundled Dependencies
+Enter the bitHopper folder
+Double click install.py, it may appear to just be "install" with no ".py" extension
 
-After pypm has finished installing greenlet successully type "exit" and your bitHopper is all set. Although
-using ActiveState Python's pypm should work 99% of the time there have been reports of people having issues
-with using it. If this is the case you could also download greenlet package from:
-
-http://www.lfd.uci.edu/~gohlke/pythonlibs/
-
-Please be aware that these are unofficial Windows binaries for Python. It is always best to either download
-greenlet source yourself and compile it or use pypm method. If you have no other way and you have to use
-these unofficial binaries then greenlet-0.3.1.win32-py2.7.exe is the correct one to download. It will
-extract itself into correct directory.
-
+Running bitHopper
+DoubleClick bitHopper.py inside the bithopper folder.
+It may appear to just be bitHopper with no .py extension.
 
 # Configuring user settings
 
+Worker Configuration page: http://localhost:8337/worker
 BitHopper Stats page: http://localhost:8337/stats
 
-Copy "user.cfg.default" to a new file called "user.cfg" then modify the new file to include your pool 
-worker usernames and passwords. Repeat with "bh.cfg.default" and make sure default values work for you.
+Copy "user.cfg.default" to a new file called "user.cfg" then modify the new file to have correct pool roles.
+Ignore the usernames and passwords. Configure the usernames and passwords on http://localhost:8337/worker
+
+Repeat with "bh.cfg.default" and make sure default values work for you.
 Run "python bitHopper.py" in *nix or in Windows you can double click on run-bithopper.bat. After script
 updates info check if the pools have been added correctly to your stats page.
 
@@ -181,5 +167,5 @@ or have "Donation" pool enabled in your stats page (setup donation percent in yo
  flower1024, echiu64 (ed64), graphiclunarkid, elitak, Clipseza, littleant, bb-btc, gnaget, murfshake, Sukrim, gtrrkicw,
  swordv2, bitcoindaddy, rkozola, ryouiki, starlightbreaker, hawks5999, erasmo, pueytan, macboy80, sdogi, joulesbeef,
  Seoulboy1, paraipan, Swicher, lucita777, TenthReality, dfc (Douglas Calvert), dadittoz, cutnpaster, simonk83, xzion,
- HolodeckJizzmopper, MartyChubbs, iongchun
+ HolodeckJizzmopper, Locky7, iongchun
 

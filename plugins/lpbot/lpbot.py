@@ -1,13 +1,13 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import random, re, logging
-import re
-import eventlet
-from eventlet.green import time, threading, socket
-import eventlet.patcher
+import gevent
+import time, threading, socket
 import irclib
 SimpleIRCClient = irclib.SimpleIRCClient
 
@@ -32,14 +32,14 @@ class LpBot(SimpleIRCClient):
         hook_ann = plugins.Hook('plugins.lp.announce')
         hook_ann.register(self.announce)
 
-        eventlet.spawn_n(self.run)
-        eventlet.spawn_n(self.process_forever)
+        gevent.spawn(self.run)
+        gevent.spawn(self.process_forever)
         self.lock = threading.RLock()
 
     def process_forever(self):
         while True:
             self.ircobj.process_once(0.2)
-            eventlet.sleep(0.2)
+            gevent.sleep(0.2)
             
     def run(self):
         while True:
@@ -49,7 +49,7 @@ class LpBot(SimpleIRCClient):
                         self.chan_list = []
                         self._connect()
                         logging.info("Connect returned")
-                eventlet.sleep(self.bitHopper.config.getint('lpbot', 'run_interval'))
+                gevent.sleep(self.bitHopper.config.getint('lpbot', 'run_interval'))
     
     def _connect(self):
         logging.info( "Connecting...")

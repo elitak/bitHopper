@@ -3,7 +3,7 @@
  of pools used for hopping, gathered
    here for orientation purposes.
 
-     Last update: Dec 31, 2011
+     Last update: Feb 15, 2012
 ######################################
 ######################################
    These Pools are added recently
@@ -11,6 +11,17 @@
 ######################################
 
 ######################################
+
+
+[a1]
+#http://www.a1bitcoinpool.com
+info_1: Formaly TNTmining (closed without notice), working on first block, prop. payouts, please report experience - 15.2 Ghash/s @ 01.19.12
+info_2: Closed as of 2.23.12 website is unconfigured
+
+
+[alex]
+#https://pool.schaetter.us
+info_1: Small Prop pool, please report experience - 2.7 Ghash/s @ 01.19.12
 
 
 [asspenny]
@@ -26,6 +37,7 @@ info_4: Merged mining implemented, some issues are being fixed atm (pool thread 
 info_1: Delaying stats and not very civic attitude with occasional miners (page 95 - bH thread on main forum)
 info_2: You could try mining here with the mine_lp role - 466.02 Ghash/s @ 08.23.11
 info_3: Short disconnects due to scheduled firewall upgrade (twitter) - 295.14 Ghash/s @ 09.19.11
+info_4: Bitlc.net is now validated with DNSSEC for extra security (twitter) - 282.64 Ghash/s @ 01.27.12
 
 
 [bcpool]
@@ -36,12 +48,17 @@ info_3: Fakes json stats so you keep hopping them (page 184 - bH thread on main 
 info_4: Pool enforces a 50% penalty system for occasional miners (pool website) - 68.87 Ghash/s @ 09.06.11
 
 
+[bitcash]
+#http://bitcash.cz/pool
+info_1: Please report experience on forum or IRC - 18 Ghash/s @ 02.15.12
+
+
 [bitclockers]
 #http://bitclockers.com
 info_1: Handle with care, possible anti-hopper measures in place
 info_2: Their new servers work like clocks with zero stales, safe to mine with them - 276.20 Ghash/s @ 08.23.11
 info_3: Various issues with the load balancers and database (page 14 - pool thread on main forum) - 249.60 Ghash/s @ 09.20.11
-
+info_4: All pool stats are faked to penalize pool hoppers (page 22 - pool thread on main forum)
 
 [bithasher]
 #http://bithasher.com
@@ -62,6 +79,11 @@ info_1: Score based payout, try mining with mine_slush (page 164 - bH thread on 
 info_2: You can try the new mine_c role available for score pools and setup c: 550 - 223.68 Ghash/s @ 09.21.11
 
 
+[btcjapan]
+#https://bitcoin.ne.jp
+info_1: Score prop. pool, please report experience on forum or IRC - 2 Ghash/s @ 02.15.12
+info_2: Click the field title to enable the field for account/miner setup (page 203 - bH thread on main forum) @ 02.16.12
+
 [coinotron]
 #http://coinotron.com
 info_1: Score prop. pool, use mine_c role and (test setting c: 6), multiple coin pool - 52.94 GHash/s @ 09.28.11
@@ -71,6 +93,7 @@ info_1: Score prop. pool, use mine_c role and (test setting c: 6), multiple coin
 #https://deepbit.net
 info_1: Biggest pool around, mining with them should get your variance down - 5723 Ghash/s @ 08.23.11
 info_2: PPS payout available with a 10% fee - 3061 Ghash/s @ 10.14.11
+info_3: Added hopper detection with auto bans if you are over 6gh – 3577 Ghash/s @ 02.01.12
 
 
 [guildminers]
@@ -84,12 +107,6 @@ info_2: Mining address could be wrong, they impose a custom miner software (pool
 info_1: Switched to PPS (page 154 - bH thread on main forum)
 info_2: Seems like they're Prop. pool (IRC Chan.) - 36 GHash/s @ 08.23.11
 info_3: Down for few hours, prob ddos'ed - 25 GHash/s @ 09.27.11
-
-
-[simplecoin]
-#http://simplecoin.us
-info_1: Small Prop pool with alternative payouts and coins available (pool website) - 8.67 Ghash/s @ 10.06.11
-info_2: Merged mining implemented for every BTC payout available (simplecoin forum) - 21.70 Ghash/s @ 10.08.11
 
 
 [slush]
@@ -135,6 +152,7 @@ info_1: PPS, intro. 0% fee, pays stales
 info_2: High invalids on poclbm, site better supports phoenix 1.5+
 info_3: Registering temp disabled - 111.9 GHash/s @ 08.23.11
 info_4: Sign-up is now open - 143 GHash/s @ 10.03.11
+info_5: Pool switched to 4% fee - 500.3 GHash/s @ 01.16.12
 
 
 [mtred]
@@ -155,7 +173,8 @@ info_2: Changed to SMPPS system (pool thread on main forum)
 #http://btcserv.net
 info_1: Small pool, pls report experience on forum - 2.94 GHash/s @ 08.23.11
 info_2: Alternate PPS payout available for use as backup if wanted - 4.60 GHash/s @ 08.31.11
-info_3: Op decides to have FIFO PPS implemented (page 4 - pool thread on main forum) -  11.36 GHash/s @ 09.09.11
+info_3: Op decides to have FIFO PPS implemented (page 4 - pool thread on main forum) - 11.36 GHash/s @ 09.09.11
+info_4: Pool was mysteriously hacked and more than 400 btc robbed (pool thread on main forum) - 0 GHash/s @ 02.07.12
 
 
 [btcg]
@@ -183,10 +202,10 @@ info_6: Changed payout to PPS retroactively (http://forum.polmine.pl/index.php?t
 
 
 [bitparking]
-#http://bitparking.com
+#http://mmpool.bitparking.com
 info_1: Nmc pool (mine_nmc) - 20.2 GHash/s @ 08.23.11
 info_2: Pool was closed down on October 5, 2011
-info_3: Merged mining now available, payout is pure PPS (pool website) - 56.37 Ghash/s @ 01.03.12
+info_3: Pool is open again with merged mining enabled, payout is pure PPS (pool website) - 56.37 Ghash/s @ 01.03.12
 
 
 ###############################
@@ -213,6 +232,7 @@ info_3: Changed their reward system to PPLNS on 26 Nov. 2011 00:00 UTC (e-mail t
 [mineco]
 #https://mineco.in
 info_1: Changed to PPLNS (page 94 - bH thread on main forum) - 79 Ghash/s @ 08.23.11
+info_2: Pool Closed 2.23.12
 
 
 [mkalinin]
@@ -227,6 +247,7 @@ info_2: Stats solved - 60.5 GHash/s @ 08.23.11
 info_3: They need some help solving this long block (found) - 61.2 GHash/s @ 09.18.11
 info_4: 10% bonus on next 10 rounds (pool website) - 53.85 GHash/s @ 10.03.11
 info_5: Changing payout to DGM on next block (page 1 - pool thread on main forum) - 18.92 GHash/s @ 12.10.11
+info_6: Pool was hacked and funds compromised, they're working around the clock to fix it (pool thread on main forum) - 307.70 GHash/s @ 02.05.12
 
 
 [p2pool]
@@ -245,6 +266,14 @@ info_3: Changed payout to PPLNS (pool website) - 18.9 GHash/s @ 11.19.11
 [yourbtc]
 #http://yourbtc.net
 info_1: Small pool that uses DGM (pool website + page 2 - pool thread on main forum) - 4.3 GHash/s @ 09.21.11
+info_2: Yourbtc.net closed down. 2/22/2012; Source forum thread.
+
+
+[simplecoin]
+#http://simplecoin.us
+info_1: Small Prop pool with alternative payouts and coins available (pool website) - 8.67 Ghash/s @ 10.06.11
+info_2: Merged mining implemented for every BTC payout available (simplecoin forum) - 21.70 Ghash/s @ 10.08.11
+info_3: Discontinued prop payouts for all coins but LTC (pool website) - 29.70 Ghash/s @ 02.01.12
 
 
 #####################################
@@ -284,6 +313,7 @@ info_2: Currently mining NMC until SolidCoin vulnerability it's fixed, use mine_
 [digixc]
 #http://ix.digbtc.net
 info_1: ixcoins pool, use mine_ixc - 0.5 Ghash/s @ 09.19.11
+info_2: Website down. 2/22/2012
 
 
 
@@ -336,7 +366,11 @@ Pool-X
 
 
 GPUTECH Bitcoin Mining Pool
-#https://gputech.net/
+#https://gputech.net
+
+
+50Btc
+#https://50btc.com
 
 
 #####################################

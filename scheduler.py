@@ -1,12 +1,13 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import random, math, logging
-import eventlet
-from eventlet.green import threading, time, socket
+import gevent
+import threading, time, socket
 
 from peak.util import plugins
 
@@ -26,7 +27,7 @@ class Scheduler(object):
         hook_announce.register(self.mine_lp_force)
 
         self.loadConfig()
-        eventlet.spawn_n(self.bitHopper_server_update)
+        gevent.spawn(self.bitHopper_server_update)
 
     def loadConfig(self):
         try:
@@ -37,7 +38,7 @@ class Scheduler(object):
     def bitHopper_server_update(self):
         while True:
             self.bitHopper.server_update()
-            eventlet.sleep(20)
+            gevent.sleep(20)
 
     def reset(self):
         pass
@@ -65,7 +66,10 @@ class Scheduler(object):
         return server_name   
 
     def server_to_btc_shares(self,server):
-        return self.bitHopper.pool.get_entry(server).btc_shares()
+        if self.bitHopper.pool.get_entry(server):
+            return self.bitHopper.pool.get_entry(server).btc_shares()
+        else:
+            return 10**10, None
 
     def server_is_valid(self, server):
         info = self.bitHopper.pool.get_entry(server)

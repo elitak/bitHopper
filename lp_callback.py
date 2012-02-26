@@ -1,12 +1,13 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
 import time
-from eventlet import event
-from eventlet.green import threading, socket
+from gevent import event
+import threading, socket
 
 # Global timeout for sockets in case something leaks
 socket.setdefaulttimeout(900)
@@ -18,16 +19,15 @@ class LP_Callback():
 
     def read(self):
         "Gets the New Block work unit to send to clients"
-        return self._event.wait()
+        self._event.wait()
+        return self.work
 
-    def new_block(self, work, server):
+    def new_block(self, work):
         "Called by LP to indicate a new_block as well as the work to send to clients"
-        #Store the merkle root
-        merkle_root = work['data'][72:136]
-        self.bitHopper.getwork_store.add(server, merkle_root)
 
         #Setup the new locks, store the data and then release the old lock
+        self.work = work
         old = self._event
         self._event = event.Event()
-        old.send(work)
+        old.set()
         

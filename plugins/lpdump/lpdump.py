@@ -1,10 +1,12 @@
 #!/usr/bin/python
-#License#
-#bitHopper by Colin Rice is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-#Based on a work at github.com.
+#Copyright (C) 2011,2012 Colin Rice
+#This software is licensed under an included MIT license.
+#See the file entitled LICENSE
+#If you were not provided with a copy of the license please contact: 
+# Colin Rice colin@daedrum.net
 
-import random, re, eventlet, sys
-from eventlet.green import time, threading, socket
+import random, re, sys
+import time, threading, socket
 
 from peak.util import plugins
 # Global timeout for sockets in case something leaks
@@ -34,9 +36,9 @@ class LpDump():
                 application_path = os.path.dirname(sys.executable)
             elif __file__:
                 application_path = os.path.dirname(__file__)
-            fd = open(os.path.join(application_path, self.file_name), 'brwa+')
+            fd = open(os.path.join(application_path, self.file_name), 'ab')
         except:
-            fd = open(self.file_name, 'brwa+')
+            fd = open(self.file_name, 'ab')
 
         fd.write(time.strftime('%H%M%S') + ":" + block + ":" + server + "\n" )
         fd.close()
