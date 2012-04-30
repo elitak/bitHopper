@@ -14,7 +14,7 @@ except Exception, e:
     print "You need to install greenlet and gevent. See the readme."
     raise e
 import gevent.monkey
-import gevent.pywsgi
+import gevent.pywsgi as pywsgi
 
 #Not patching thread so we can spin of db file ops.
 gevent.monkey.patch_all(thread=False, time=False)
@@ -123,17 +123,6 @@ class BitHopper():
             backup_list = [x for x in backup_list if self.workers.get_worker(x)[0]]
 
         old_server = self.pool.get_current()
-            
-        #Find the server with highest priority
-        max_priority = 0;
-        for server in server_list:
-            info = self.pool.get_entry(server)
-            if info['priority'] > max_priority:
-                max_priority = info['priority']
-
-        #Return all servers with this priority
-        server_list = [server for server in server_list 
-                       if lambda x:self.pool.get_entry(x)['priority'] >= max_priority]
 
         if len(server_list) == 0 and len(backup_list):
             try:
@@ -157,6 +146,17 @@ class BitHopper():
                 
         if len(server_list) == 0:
             logging.error('Fatal Error, No valid pools configured!')
+
+        #Find the server with highest priority
+        max_priority = 0;
+        for server in server_list:
+            info = self.pool.get_entry(server)
+            if info['priority'] > max_priority:
+                max_priority = info['priority']
+
+        #Return all servers with this priority
+        server_list = [server for server in server_list 
+                       if lambda x:self.pool.get_entry(x)['priority'] >= max_priority]
 
         self.pool.current_list = server_list
         self.pool.build_server_map()
@@ -209,6 +209,7 @@ def main():
 
     if options.debug:
         logging.getLogger().setLevel(logging.DEBUG)
+        logging.debug('Debugging Enabled')
     elif options.trace:
         logging.getLogger().setLevel(0)
     else:
@@ -306,7 +307,7 @@ def main():
 
             #This ugly wrapper is required so wsgi server doesn't die
             socket.setdefaulttimeout(None)
-            gevent.pywsgi.WSGIServer((options.ip, listen_port),
+            pywsgi.WSGIServer((options.ip, listen_port),
                 bithopper_instance.website.handle_start, 
                 backlog=512,  log=log).serve_forever()
             socket.setdefaulttimeout(lastDefaultTimeout)

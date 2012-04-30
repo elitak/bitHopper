@@ -175,13 +175,6 @@ role: mine
 user: your_username
 pass: your_password
 
-[a1]
-#http://www.a1bitcoinpool.com (Prop.)
-#---Edit after this line if mined--- (if you want)
-role: info
-user: your_username
-pass: your_password
-
 [alex]
 #http://pool.schaetter.us (Prop.)
 #---Edit after this line if mined--- (if you want)
@@ -285,11 +278,33 @@ user: c00w1456testhop
 pass: x
 
 [bitparking]
-#http://mmpool.bitparking.com (PPS)
+#http://mmpool.bitparking.com (MergeM-PPS)
 #---Edit after this line if mined---
 role: backup
 user: your_username
 #passwords can be anything on bitparking
+pass: your_password
+
+[gpumax]
+#https://gpumax.com (PPS)
+#---Edit after this line if mined---
+role: backup
+user: your_username
+pass: abc123
+
+[fiftybtc]
+#https://50btc.com (PPS)
+#---Edit after this line if mined---
+role: disable
+user: your_username
+#passwords can be anything on 50btc
+pass: your_password
+
+[project2]
+#http://project2.tygrr.com (PPS)
+#---Edit after this line if mined---
+role: backup
+user: your_username
 pass: your_password
 
 ###############################
@@ -299,7 +314,7 @@ pass: your_password
 ###############################
 
 [eclipsemc]
-#https://eclipsemc.com (DGM)
+#https://eclipsemc.com (MergeM-DGM)
 #---Edit after this line if mined---
 role: disable
 eclipsemc_apikey: bd0eded7e35b1b5fc48f8d10214d98
@@ -328,7 +343,7 @@ user: your_username
 pass: your_password
 
 [ozco]
-#https://ozco.in (DGM)
+#https://ozco.in (MergeM-DGM)
 #---Edit after this line if mined---
 role: info
 user:c00w.1
@@ -361,6 +376,29 @@ pass: your_password
 #---Edit after this line if mined---
 role: info
 user: your_username
+pass: your_password
+
+[btcwarp]
+#http://BTCWARP.com (PPLNS)
+#---Edit after this line if mined---
+role: info
+user: your_username
+#password can be anything btcwarp
+pass: your_password
+
+[maxbtc]
+#https://MaxBTC.com (MergeM-DGM)
+#---Edit after this line if mined---
+role: info
+user: your_username
+pass: your_password
+
+[bitminter]
+#http://BitMinter.com (MergeM-PPLNS)
+#---Edit after this line if mined---
+role: info
+user: your_username
+#password can be anything bitminter
 pass: your_password
 
 ######################################
